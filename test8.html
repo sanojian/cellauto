@@ -1,0 +1,243 @@
+<html>
+	<head>
+		<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
+
+		<script>
+
+var TOPLEFT = { x: -1, y: -1, index: 0 };
+var TOP = { x: 0, y: -1, index: 1 };
+var TOPRIGHT = { x: 1, y: -1, index: 2 };
+var LEFT = { x: -1, y: 0, index: 3 };
+var RIGHT = { x: 1, y: 0, index: 4 };
+var BOTTOMLEFT = { x: -1, y: 1, index: 5 };
+var BOTTOM = { x: 0, y: 1, index: 6 };
+var BOTTOMRIGHT = { x: 1, y: 1, index: 7 };
+
+
+window.onload = function() {
+
+
+	var world = new CAWorld({
+		width: 180,
+		height: 80,
+		cellSize: 8
+	});
+	
+	var drawnGrid = document.getElementById('drawnGrid');
+	
+	var myCanvas = document.getElementById('myCanvas');
+	myCanvas.width = world.cellSize * world.width;
+	myCanvas.height = world.cellSize * world.height;
+	var ctx = myCanvas.getContext('2d');
+	function loop() {
+
+		world.step();
+		
+		drawGrid(ctx, world);
+	};
+	
+	drawGrid(ctx, world);
+	setInterval(function() {
+		loop();
+	}, 100);
+};		
+
+function drawGrid(ctx, world) {
+	ctx.clearRect(0, 0, world.width*world.cellSize, world.height*world.cellSize);
+
+	for (var y=0; y<world.height; y++) {
+		for (var x=0; x<world.width; x++) {
+			//ctx.fillStyle = 'rgba(' + world.grid[y][x].color + ', ' + world.grid[y][x].getDensity() + ')';
+			ctx.fillStyle = 'rgb(' + world.grid[y][x].color + ')';
+			var size = Math.ceil(world.cellSize * world.grid[y][x].getDensity());
+			var xLoc = x*world.cellSize + world.cellSize/2 - Math.ceil(size/2);
+			var yLoc = y*world.cellSize + world.cellSize/2 - Math.round(size/2);
+			ctx.fillRect(xLoc, yLoc, size, size);
+		}
+	}
+}
+
+function CAWorld(options) {
+	
+	this.width = 24;
+	this.height = 24;
+
+	var neighborhood = [null, null, null, null, null, null, null, null];
+	this.step = function() {
+		var y, x;
+		for (y=0; y<this.height; y++) {
+			for (x=0; x<this.width; x++) {
+				this.grid[y][x].reset();
+			}
+		}
+
+		for (y=0; y<this.height; y++) {
+			for (x=0; x<this.width; x++) {
+				this.fillNeighbors(neighborhood, x, y);
+				this.grid[y][x].process(neighborhood);
+			}
+		}
+	};
+	
+	var NEIGHBORLOCS = [{x:-1, y:-1}, {x:0, y:-1}, {x:1, y:-1}, {x:-1, y:0}, {x:1, y:0},{x:-1, y:1}, {x:0, y:1}, {x:1, y:1}];
+	this.fillNeighbors = function(neighbors, x, y) {
+		for (var i=0; i<NEIGHBORLOCS.length; i++) {
+			var neighborX = x + NEIGHBORLOCS[i].x;
+			var neighborY = y + NEIGHBORLOCS[i].y;
+			if (neighborX < 0 || neighborY < 0 || neighborX >= this.width || neighborY >= this.height) {
+				neighbors[i] = null;
+			}
+			else {
+				neighbors[i] = this.grid[neighborY][neighborX];
+			}
+		}
+	};
+	
+	this.initialize = function() {
+		if (options) {
+			for (var key in options) {
+				this[key] = options[key];
+			}
+		}
+		
+		this.grid = [];
+		for (var y=0; y<this.height; y++) {
+			this.grid[y] = [];
+			for (var x=0; x<this.width; x++) {
+				if (Math.random() > 0.2) {
+					this.grid[y][x] = new CellAutoWater(x, y);
+				}
+				else {
+					this.grid[y][x] = new CellAutoRock(x, y);
+				}
+			}
+		}
+	};
+
+	this.initialize();
+}
+
+function CellAutoRock(locX, locY, options) {
+	this.x = locX;
+	this.y = locY;
+
+	//this.color = "133, 76, 48";
+	this.color = "68, 36, 52";
+	
+	this.initialize = function() {
+		if (options) {
+			for (var key in options) {
+				this[key] = options[key];
+			}
+		}
+
+		this.reset();
+	};
+	
+	this.reset = function() {
+		//this.hadWater = this.water;
+	};
+	
+	this.initialize();
+};
+
+CellAutoRock.prototype.getDensity = function(neighbors) {
+	return 1;
+};
+
+CellAutoRock.prototype.process = function(neighbors) {
+	
+};
+
+function CellAutoWater(locX, locY, options) {
+	this.x = locX;
+	this.y = locY;
+
+	this.water = Math.floor(Math.random() * 9);
+	this.color = "89, 125, 206";
+	
+	this.initialize = function() {
+		if (options) {
+			for (var key in options) {
+				this[key] = options[key];
+			}
+		}
+
+		this.reset();
+	};
+	
+	this.reset = function() {
+		//this.hadWater = this.water;
+	};
+	
+	this.initialize();
+};
+
+CellAutoWater.prototype.getDensity = function(neighbors) {
+	return (this.water/9);
+};
+
+CellAutoWater.prototype.process = function(neighbors) {
+	
+	var i;
+	// top
+	for (i=0; i<=2; i++) {
+		if (neighbors[i] !== null && this.water < 9 && neighbors[i].water) {
+			this.water++;
+			neighbors[i].water--;
+		}
+	}	
+	// sides
+	for (i=3; i<=4; i++) {
+		if (neighbors[i] !== null && neighbors[i].water > this.water) {
+			this.water++;
+			neighbors[i].water--;
+		}
+	
+	}
+	
+};
+
+function CellAutoGoL(locX, locY, options) {
+	this.x = locX;
+	this.y = locY;
+
+	this.alive = Math.random() > 0.3;
+	
+	this.initialize = function() {
+		if (options) {
+			for (var key in options) {
+				this[key] = options[key];
+			}
+		}
+
+		this.reset();
+	};
+	
+	this.reset = function() {
+		this.wasAlive = this.alive;
+	};
+	
+	this.initialize();
+};
+
+CellAutoGoL.prototype.process = function(neighbors) {
+	
+	var surrounding = 0;
+	for (var i=0; i<neighbors.length; i++) {
+		if (neighbors[i] !== null && neighbors[i].wasAlive) {
+			surrounding++;
+		}
+	}
+	this.alive = surrounding === 3 || surrounding === 2 && this.alive;
+};
+
+		</script>
+
+	</head>
+	
+	<body>
+		<div id="drawnGrid" style="font-family: 'Courier New', Courier, monospace;"></div>
+		<canvas id="myCanvas" />
+	</body>
+</html>
