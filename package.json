@@ -1,0 +1,13 @@
+{
+	"name": "cellauto",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"grunt": "~0.4.1",
+		"grunt-contrib-concat": "~0.3.0",
+		"grunt-contrib-jshint": "~0.7.1",
+		"grunt-contrib-watch": "~0.5.1",
+		"grunt-develop": "*",
+		"matchdep": "~0.1.2"
+	}
+}
