@@ -25,7 +25,7 @@ window.onload = function() {
         loadExample(g_currentExample);
     });
 
-    loadExample('fallingWater');
+    loadExample('caves');
 
     var myCanvas = document.getElementById('myCanvas');
     var ctx = myCanvas.getContext('2d');
@@ -81,6 +81,7 @@ function drawGrid(ctx, world) {
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pills pull-right">
+                    <li role="presentation"><a href="#about">About</a></li>
                     <li role="presentation"><a href="https://github.com/sanojian/cellauto">GitHub</a></li>
                 </ul>
             </nav>
@@ -89,10 +90,12 @@ function drawGrid(ctx, world) {
 
         <div class="jumbotron">
             <div class="row">
-                <div class="col-md-9" style="text-align: center">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-8" style="text-align: center">
                     <canvas id="myCanvas"></canvas>
                 </div>
-                <div class="col-md-3" style="text-align: center">
+                <div class="col-md-2" style="text-align: center">
                     <div class="dropdown">
                         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                             <span id="exampleName">Dropdown</span>
@@ -102,6 +105,7 @@ function drawGrid(ctx, world) {
                             <li><a class="exampleLink" data-example="fallingWater">fallingWater</a></li>
                             <li><a class="exampleLink" data-example="gameOfLife">gameOfLife</a></li>
                             <li><a class="exampleLink" data-example="cyclic">cyclic</a></li>
+                            <li><a class="exampleLink" data-example="cavesWithWater">cavesWithWater</a></li>
                             <li><a class="exampleLink" data-example="caves">caves</a></li>
                         </ul>
                     </div>
@@ -110,11 +114,20 @@ function drawGrid(ctx, world) {
             </div>
         </div>
 
-        <div class="row marketing">
-            <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-8">
                 <pre id="exampleCode" class="prettyprint lang-js"></pre>
             </div>
         </div>
+
+        <a name="about" />
+        <h3>About</h3>
+        <div class="row marketing">
+        </div>
+
+
         <footer class="footer">
             <p>&copy; Jonas Olmstead 2014</p>
         </footer>

@@ -15,29 +15,28 @@ function example_fallingWater() {
                 // already empty
                 return;
             }
-            // bottom
+	        // push my water out to my available neighbors
+
+            // cell below me will take all it can
             if (neighbors[world.BOTTOM] !== null && this.water && neighbors[world.BOTTOM].water < 9) {
-                // all of it
                 var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM].water);
                 this.water-= amt;
                 neighbors[world.BOTTOM].water += amt;
                 return;
             }
 
-            // bottom with corners
+            // bottom two corners take half of what I have
             for (var i=5; i<=7; i++) {
                 if (i!=world.BOTTOM && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
-                    // half of it
                     var amt = Math.min(this.water, Math.ceil((9 - neighbors[i].water)/2));
                     this.water-= amt;
                     neighbors[i].water += amt;
                     return;
                 }
             }
-            // sides
+            // sides take a third of what I have
             for (i=3; i<=4; i++) {
                 if (neighbors[i] !== null && neighbors[i].water < this.water) {
-                    // third of it
                     var amt = Math.min(this.water, Math.ceil((9 - neighbors[i].water)/3));
                     this.water-= amt;
                     neighbors[i].water += amt;
@@ -46,6 +45,7 @@ function example_fallingWater() {
             }
         }
     }, function() {
+        //init
         this.water = Math.floor(Math.random() * 9);
     });
 

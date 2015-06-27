@@ -2,6 +2,14 @@ a.exampleLink {
     cursor: pointer;
 }
 
+body {
+    -webkit-tab-size: 3;
+    -moz-tab-size: 3;
+    -ms-tab-size: 3;
+    -o-tab-size: 3;
+    tab-size: 3;
+}
+
 /* desert scheme ported from vim to google prettify */
 pre.prettyprint { display: block; background-color: #333 }
 pre .nocode { background-color: none; color: #000 }

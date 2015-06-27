@@ -7,6 +7,15 @@ function CellAutoCell(locX, locY) {
 CellAutoCell.prototype.process = function(neighbors) {
 	return;
 };
+CellAutoCell.prototype.countSurroundingCellsWithValue = function(neighbors, value) {
+	var surrounding = 0;
+	for (var i = 0; i < neighbors.length; i++) {
+		if (neighbors[i] !== null && neighbors[i][value]) {
+			surrounding++;
+		}
+	}
+	return surrounding;
+};
 CellAutoCell.prototype.reset = function(neighbors) {
 	return;
 };
@@ -15,6 +24,7 @@ function CAWorld(options) {
 
 	this.width = 24;
 	this.height = 24;
+	this.options = options;
 
 	this.TOPLEFT = 0; this.TOP = 1; this.TOPRIGHT = 2;
 	this.LEFT = 3; this.RIGHT = 4;
@@ -80,7 +90,7 @@ function CAWorld(options) {
 
 				for (i=0; i<arrayTypeDist.length; i++) {
 					if (random <= arrayTypeDist[i].distribution) {
-						this.grid[y][x] = new cellTypes[arrayTypeDist[i].name](x, y);
+						this.grid[y][x] = new this.cellTypes[arrayTypeDist[i].name](x, y);
 						break;
 					}
 				}
@@ -88,9 +98,9 @@ function CAWorld(options) {
 		}
 	};
 
-	var cellTypes = {};
+	this.cellTypes = {};
 	this.registerCellType = function(name, options, init) {
-		cellTypes[name] = function(x, y) {
+		this.cellTypes[name] = function(x, y) {
 			CellAutoCell.call(this, x, y);
 
 			if (init) {
@@ -98,16 +108,57 @@ function CAWorld(options) {
 			}
 
 		};
-		cellTypes[name].prototype = Object.create(CellAutoCell.prototype);
-		cellTypes[name].prototype.constructor = cellTypes[name];
-		cellTypes[name].prototype.cellType = name;
+		this.cellTypes[name].prototype = Object.create(CellAutoCell.prototype);
+		this.cellTypes[name].prototype.constructor = this.cellTypes[name];
+		this.cellTypes[name].prototype.cellType = name;
 
 		if (options) {
 			for (var key in options) {
-				cellTypes[name].prototype[key] = options[key];
+				this.cellTypes[name].prototype[key] = options[key];
 			}
 		}
 
 	};
 
 }
+
+CAWorld.prototype.initializeFromGrid  = function(values, initGrid) {
+	if (this.options) {
+		for (var key in this.options) {
+			this[key] = this.options[key];
+		}
+	}
+
+	this.grid = [];
+	for (var y=0; y<this.height; y++) {
+		this.grid[y] = [];
+		for (var x=0; x<this.width; x++) {
+			for (var i=0; i<values.length; i++) {
+				if (values[i].gridValue === initGrid[y][x]) {
+					this.grid[y][x] = new this.cellTypes[values[i].name](x, y);
+					break;
+				}
+			}
+		}
+	}
+
+};
+
+CAWorld.prototype.createGridFromValues = function(values, defaultValue) {
+	var newGrid = [];
+
+	for (var y=0; y<this.height; y++) {
+		newGrid[y] = [];
+		for (var x = 0; x < this.width; x++) {
+			newGrid[y][x] = defaultValue;
+			var cell = this.grid[y][x];
+			for (var i=0; i<values.length; i++) {
+				if (cell.cellType == values[i].cellType && cell[values[i].hasProperty]) {
+					newGrid[y][x] = values[i].value;
+				}
+			}
+		}
+	}
+
+	return newGrid;
+};

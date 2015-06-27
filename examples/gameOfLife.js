@@ -11,18 +11,14 @@ function example_gameOfLife() {
 			return this.alive ? '68, 36, 52, 1' : '255, 255, 255, 1';
 		},
 		process: function (neighbors) {
-			var surrounding = 0;
-			for (var i = 0; i < neighbors.length; i++) {
-				if (neighbors[i] !== null && neighbors[i].wasAlive) {
-					surrounding++;
-				}
-			}
+			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasAlive');
 			this.alive = surrounding === 3 || surrounding === 2 && this.alive;
 		},
 		reset: function () {
 			this.wasAlive = this.alive;
 		}
 	}, function () {
+		//init
 		this.alive = Math.random() > 0.5;
 	});
 

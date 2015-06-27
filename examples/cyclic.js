@@ -24,13 +24,11 @@ function example_cyclic() {
 					changing = changing || neighbors[i].state === next;
 				}
 			}
-			//var changing = neighbors.some(function (spot) {
-			//    return spot.creature.state === next;
-			//});
 			if (changing) this.state = next;
 			return true;
 		}
 	}, function () {
+		//init
 		this.state = Math.floor(Math.random() * 16);
 	});
 
