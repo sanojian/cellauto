@@ -16,8 +16,10 @@ function CAWorld(options) {
 			}
 		}
 
-		for (y=0; y<this.height; y++) {
-			for (x=0; x<this.width; x++) {
+		//for (y=0; y<this.height; y++) {
+		//	for (x=0; x<this.width; x++) {
+		for (y=this.height-1; y>=0; y--) {
+			for (x=this.width-1; x>=0; x--) {
 				this.fillNeighbors(neighborhood, x, y);
 				this.grid[y][x].process(neighborhood);
 			}

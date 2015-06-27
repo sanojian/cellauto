@@ -11,10 +11,11 @@ module.exports = function(grunt) {
 		watch: {
 			scripts: {
 				files: [
-					'src/*.js'
+					'src/*.js',
+					'examples/*.js'
 				],
 				tasks: ['jshint','concat']
-			},
+			}
 		},
 		jshint: {
 			options: {
@@ -27,12 +28,13 @@ module.exports = function(grunt) {
 				files: {
 					'dist/cellauto.js': [
 						'src/*.js'
+					],
+					'dist/examples.js': [
+						'examples/*.js'
 					]
 				}
 			}
 		}
-
-
 	});
 
 	// These plugins provide necessary tasks.

@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
-        <script src="../dist/cellauto.js"></script>
+function example_fallingWater() {
 
-        <style>
-            body {
-                margin: 0;
-                text-align: center;
-            }
-        </style>
-		<script>
-
-window.onload = function() {
-
-
-	var world = new CAWorld({
-		width: 100,
-		height: 66,
+    var world = new CAWorld({
+		width: 96,
+		height: 64,
 		cellSize: 6
 	});
 
@@ -75,44 +60,5 @@ window.onload = function() {
         { name: 'rock', distribution: 30 }
     ]);
 
-	var myCanvas = document.getElementById('myCanvas');
-	myCanvas.width = world.cellSize * world.width;
-	myCanvas.height = world.cellSize * world.height;
-	var ctx = myCanvas.getContext('2d');
-
-    var frames = 0;
-	function loop() {
-
-        // limit speed of simulation
-        if(frames % 3 === 0) {
-            world.step();
-            drawGrid(ctx, world);
-        }
-
-        requestAnimationFrame(loop);
-
-        frames++;
-	};
-
-    requestAnimationFrame(loop);
-};
-
-function drawGrid(ctx, world) {
-	ctx.clearRect(0, 0, world.width*world.cellSize, world.height*world.cellSize);
-
-	for (var y=0; y<world.height; y++) {
-		for (var x=0; x<world.width; x++) {
-            ctx.fillStyle = 'rgba(' + world.grid[y][x].getColor() + ')';
-			ctx.fillRect(x*world.cellSize, y*world.cellSize, world.cellSize, world.cellSize);
-		}
-	}
+	return world;
 }
-
-		</script>
-
-	</head>
-	
-	<body>
-		<canvas id="myCanvas" />
-	</body>
-</html>

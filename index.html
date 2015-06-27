@@ -3,12 +3,126 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>cellauto.js</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./style.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+
+    <script src="./dist/cellauto.js"></script>
+    <script src="./dist/examples.js"></script>
+
+    <script>
+
+var g_nextExample = '';
+window.onload = function() {
+    $('.exampleLink').on('click', function (evt) {
+        loadExample($(this).attr('data-example'));
+    });
+    $('#btnReloadExample').on('click', function (evt) {
+        g_nextExample = $('#selExample').val();
+    });
+
+    loadExample('fallingWater');
+
+    var myCanvas = document.getElementById('myCanvas');
+    var ctx = myCanvas.getContext('2d');
+
+    var frames = 0;
+    var world;
+    function loop() {
+
+        if (g_nextExample !== null) {
+            world = window[g_nextExample]();
+            myCanvas.width = world.cellSize * world.width;
+            myCanvas.height = world.cellSize * world.height;
+            g_nextExample = null;
+        }
+        // limit speed of simulation
+        if(frames % 3 === 0) {
+            world.step();
+            drawGrid(ctx, world);
+        }
+
+        requestAnimationFrame(loop);
+
+        frames++;
+    };
+
+    requestAnimationFrame(loop);
+}
+
+function loadExample(example) {
+    g_nextExample = 'example_' + example;
+    $('#exampleCode').removeClass("prettyprinted").text(window[g_nextExample].toString());
+    $('#exampleName').text(example);
+    PR.prettyPrint();
+}
+
+function drawGrid(ctx, world) {
+    ctx.clearRect(0, 0, world.width*world.cellSize, world.height*world.cellSize);
+
+    for (var y=0; y<world.height; y++) {
+        for (var x=0; x<world.width; x++) {
+            ctx.fillStyle = 'rgba(' + world.grid[y][x].getColor() + ')';
+            ctx.fillRect(x*world.cellSize, y*world.cellSize, world.cellSize, world.cellSize);
+        }
+    }
+}
+
+    </script>
 </head>
 <body>
-    <iframe id="worldFrame" src="./examples/fallingWater.html" width="600" height="400"></iframe>
-    <select>
-        <option value="./examples/fallingWater.html">fallingWater</option>
-        <option value="./examples/gameOfLife.html">gameOfLife</option>
-    </select>
+
+    <div class="container">
+        <div class="header clearfix">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="#">Home</a></li>
+                    <li role="presentation"><a href="#">About</a></li>
+                    <li role="presentation"><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">cellauto.js</h3>
+        </div>
+
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-md-9" style="text-align: center">
+                    <canvas id="myCanvas"></canvas>
+                </div>
+                <div class="col-md-3" style="text-align: center">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <span id="exampleName">Dropdown</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a class="exampleLink" data-example="fallingWater">fallingWater</a></li>
+                            <li><a class="exampleLink" data-example="gameOfLife">gameOfLife</a></li>
+                            <li><a class="exampleLink" data-example="cyclic">cyclic</a></li>
+                            <li><a class="exampleLink" data-example="caves">caves</a></li>
+                        </ul>
+                    </div>
+                    <button id="btnReloadExample" class="btn btn-default">Reload</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row marketing">
+            <div class="col-md-12">
+                <pre id="exampleCode" class="prettyprint lang-js"></pre>
+            </div>
+        </div>
+        <footer class="footer">
+            <p>&copy; Jonas Olmstead 2014</p>
+        </footer>
+
+    </div> <!-- /container -->
+
+
+
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </body>
 </html>
