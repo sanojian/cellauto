@@ -16,12 +16,13 @@
     <script>
 
 var g_nextExample = '';
+var g_currentExample = '';
 window.onload = function() {
     $('.exampleLink').on('click', function (evt) {
         loadExample($(this).attr('data-example'));
     });
     $('#btnReloadExample').on('click', function (evt) {
-        g_nextExample = $('#selExample').val();
+        loadExample(g_currentExample);
     });
 
     loadExample('fallingWater');
@@ -54,6 +55,7 @@ window.onload = function() {
 }
 
 function loadExample(example) {
+    g_currentExample = example;
     g_nextExample = 'example_' + example;
     $('#exampleCode').removeClass("prettyprinted").text(window[g_nextExample].toString());
     $('#exampleName').text(example);
@@ -79,9 +81,7 @@ function drawGrid(ctx, world) {
         <div class="header clearfix">
             <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li role="presentation" class="active"><a href="#">Home</a></li>
-                    <li role="presentation"><a href="#">About</a></li>
-                    <li role="presentation"><a href="#">Contact</a></li>
+                    <li role="presentation"><a href="https://github.com/sanojian/cellauto">GitHub</a></li>
                 </ul>
             </nav>
             <h3 class="text-muted">cellauto.js</h3>
