@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./style.css">
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <script src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js?skin=desert"></script>
 
     <script src="./dist/cellauto.js"></script>
     <script src="./dist/examples.js"></script>
@@ -25,7 +25,7 @@ window.onload = function() {
         loadExample(g_currentExample);
     });
 
-    loadExample('caves');
+    loadExample('cavesWithWater');
 
     var myCanvas = document.getElementById('myCanvas');
     var ctx = myCanvas.getContext('2d');
@@ -82,6 +82,7 @@ function drawGrid(ctx, world) {
             <nav>
                 <ul class="nav nav-pills pull-right">
                     <li role="presentation"><a href="#about">About</a></li>
+                    <li role="presentation"><a href="#usage">Usage</a></li>
                     <li role="presentation"><a href="https://github.com/sanojian/cellauto">GitHub</a></li>
                 </ul>
             </nav>
@@ -123,13 +124,163 @@ function drawGrid(ctx, world) {
         </div>
 
         <a name="about" />
-        <h3>About</h3>
         <div class="row marketing">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <h2>About</h2>
+                cellauto.js is a library for creating cellular automata simulations in Javascript.  The library is tiny and
+                is pure Javascript, requiring no third party code to run in your browser. The project is open-source and licensed under MIT.
+            </div>
         </div>
 
+        <a name="usage" />
+        <div class="row marketing">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <h2>Usage</h2>
+                cellauto.js is a library for creating cellular automata simulations in Javascript.  The library is tiny and
+                is pure Javascript, requiring no third party code to run in your browser. The project is open-source and licensed under MIT.
 
+                <h3>Getting Started</h3>
+                Creating the world to run your simulation is simple.
+                <pre class="prettyprint lang-js">
+var world = new CAWorld({
+    width: 96,
+    height: 64
+});
+                </pre>
+
+                <h3>Defining a cell</h3>
+                Now you need to define a cell that will live in your world.  Lets start with the classic cellular automata
+                example, Conway's Game of Life.
+                <pre class="prettyprint lang-js">
+world.registerCellType('living', {
+    getColor: function () {
+        return this.alive ? '68, 36, 52, 1' : '255, 255, 255, 1';
+    },
+    process: function (neighbors) {
+        var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasAlive');
+        this.alive = surrounding === 3 || surrounding === 2 && this.alive;
+    },
+    reset: function () {
+        this.wasAlive = this.alive;
+    }
+}, function () {
+    //init
+    this.alive = Math.random() > 0.5;
+});
+                </pre>
+
+                In the above example, a cell that has 2 living cells surrounding it will survive.  If 3 living cells surround
+                surround the cell, it can come back from the dead.<br>
+                <br>
+                Here are some interesting functions from the above example:
+
+                <ul class="defaults">
+                    <li id="type">
+                        <h4><span class="token keyword">process</span></h4>
+                        <p>This function is called every step of the simulation and is passed an array of neighbors to this cell.</p>
+                    </li>
+                </ul>
+                <ul class="defaults">
+                    <li id="type">
+                        <h4><span class="token keyword">reset</span></h4>
+                        <p>This function is called at the beginning of each step of the simulation to prepare the cell for the upcoming step. </p>
+                    </li>
+                </ul>
+                <ul class="defaults">
+                    <li id="type">
+                        <h4><span class="token keyword">getColor</span></h4>
+                        <p>This is our own function for determining what color the cell will be. It will be used in our display loop, which
+                        is not part of the engine.</p>
+                    </li>
+                </ul>
+                <br>
+                You can also see an init function was passed at the end of the definition.  It is used to initialize the cell when the
+                simulation starts.  In this case it determines if each cell is alive or dead to start the simulation.
+
+                <h3>Adding cells to the world</h3>
+                Cells are added to the world in the initialization step.
+                <pre class="prettyprint lang-js">
+world.initialize([
+    { name: 'living', distribution: 100 }
+]);
+
+                </pre>
+
+                In this example, cells of the type "living" will be added to the world and assigned 100% of the cells.  If we wanted
+                the world to begin with more types of cells, we could initialize like this.
+                <pre class="prettyprint lang-js">
+world.initialize([
+    { name: 'water', distribution: 40 },
+    { name: 'rock', distribution: 60 }
+]);
+                </pre>
+
+                <h3>Other interesting functions</h3>
+                <ul class="defaults">
+                    <li id="type">
+                        <h4><span class="token keyword">step</span></h4>
+                        <p>This is used to make the simulation run one loop.  Typically you would run step
+                            from setInterval or requestAnimationFrame.</p>
+                    </li>
+                </ul>
+                 <ul class="defaults">
+                    <li id="type">
+                        <h4><span class="token keyword">countSurroundingCellsWithValue</span></h4>
+                        <p>Returns a count of members of the given cell array that contain the given
+                            propery.  This is useful in many cellular automata simulations.</p>
+                    </li>
+                </ul>
+                <pre class="prettyprint lang-js">
+process: function (neighbors) {
+    var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');
+    this.open = (this.wasOpen && surrounding >= 4) || surrounding >= 6;
+}
+                </pre>
+                <ul class="defaults">
+                    <li id="type">
+                        <h4><span class="token keyword">createGridFromValues</span></h4>
+                        <p>Creates a grid of integers which can be used as input for a new world.  In this way, we
+                            can build our simulated world in several iterations.  See the "cavesWithWater" example.</p>
+                    </li>
+                </ul>
+                <pre class="prettyprint lang-js">
+var grid = world.createGridFromValues([
+        { cellType: 'wall', hasProperty: 'open', value: 0 }
+    ], 1);
+                </pre>
+                 <ul class="defaults">
+                    <li id="type">
+                        <h4><span class="token keyword">initializeFromGrid</span></h4>
+                        <p>Accepts a grid generated with "createGridFromValues" and a list of what values mean
+                            which cellTypes in this new simulated world.</p>
+                    </li>
+                </ul>
+                <pre class="prettyprint lang-js">
+world.initializeFromGrid([
+    { name: 'rock', gridValue: 1 },
+    { name: 'water', gridValue: 0 }
+], grid);
+</pre>
+
+                <h3>Display</h3>
+                There is no display code included in the library.  How you display each cell is up to you.  You can iterate
+                the value of each cell in a simple loop.
+                <pre class="prettyprint lang-js">
+for (var y=0; y&lt;world.height; y++) {
+    for (var x=0; x&lt;world.width; x++) {
+        var cell = world.grid[y][x];
+    }
+}
+                </pre>
+
+            </div>
+        </div>
+
+        <br>
         <footer class="footer">
-            <p>&copy; Jonas Olmstead 2014</p>
+            <p class="pull-right">&copy; Jonas Olmstead 2014</p>
         </footer>
 
     </div> <!-- /container -->
