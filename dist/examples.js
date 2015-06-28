@@ -118,8 +118,13 @@ function example_cavesWithWater() {
 	});
 
 	world.registerCellType('rock', {
+		color: '68, 36, 52, 1',
+		isSolid: true,
 		getColor: function() {
-			return '68, 36, 52, 1';
+			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';
+		},
+		process: function(neighbors) {
+			this.lighted = neighbors[world.TOP] && !neighbors[world.TOP].water && !neighbors[world.TOP].isSolid;
 		}
 	});
 

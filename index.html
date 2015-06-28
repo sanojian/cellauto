@@ -167,7 +167,7 @@ world.registerCellType('living', {
     }
 }, function () {
     //init
-    this.alive = Math.random() > 0.5;
+    this.alive = Math.random() &gt; 0.5;
 });
                 </pre>
 
@@ -235,7 +235,7 @@ world.initialize([
                 <pre class="prettyprint lang-js">
 process: function (neighbors) {
     var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');
-    this.open = (this.wasOpen && surrounding >= 4) || surrounding >= 6;
+    this.open = (this.wasOpen && surrounding &gt;= 4) || surrounding &gt;= 6;
 }
                 </pre>
                 <ul class="defaults">
