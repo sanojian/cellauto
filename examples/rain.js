@@ -99,7 +99,6 @@ function example_rain() {
 	});
 
 	world.registerCellType('rock', {
-		color: '68, 36, 52, 1',
 		isSolid: true,
 		getColor: function() {
 			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';

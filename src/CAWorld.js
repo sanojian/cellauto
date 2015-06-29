@@ -42,11 +42,6 @@ function CAWorld(options) {
 	};
 
 	this.initialize = function(arrayTypeDist) {
-		if (options) {
-			for (var key in options) {
-				this[key] = options[key];
-			}
-		}
 
 		// sort the cell types by distribution
 		arrayTypeDist.sort(function(a, b) {
@@ -98,14 +93,16 @@ function CAWorld(options) {
 
 	};
 
+	// apply options
+	if (options) {
+		for (var key in options) {
+			this[key] = options[key];
+		}
+	}
+
 }
 
 CAWorld.prototype.initializeFromGrid  = function(values, initGrid) {
-	if (this.options) {
-		for (var key in this.options) {
-			this[key] = this.options[key];
-		}
-	}
 
 	this.grid = [];
 	for (var y=0; y<this.height; y++) {

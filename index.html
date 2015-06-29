@@ -24,9 +24,12 @@ window.onload = function() {
     $('#btnReloadExample').on('click', function (evt) {
         loadExample(g_currentExample);
     });
+    $('#numFrames').on('change', function (evt) {
+        changeStepFrames();
+    });
 
     loadExample('cavesWithWater');
-    //loadExample('rain');
+    //loadExample('trees');
 
     var myCanvas = document.getElementById('myCanvas');
     var ctx = myCanvas.getContext('2d');
@@ -42,7 +45,7 @@ window.onload = function() {
             g_nextExample = null;
         }
         // limit speed of simulation
-        if(frames % 3 === 0) {
+        if(frames % g_stepFrames === 0) {
             world.step();
             drawGrid(ctx, world);
         }
@@ -52,7 +55,13 @@ window.onload = function() {
         frames++;
     };
 
+    changeStepFrames();
     requestAnimationFrame(loop);
+}
+
+var g_stepFrames = 1;
+function changeStepFrames() {
+    g_stepFrames = parseInt($('#numFrames').val(), 10);
 }
 
 function loadExample(example) {
@@ -112,6 +121,11 @@ function drawGrid(ctx, world) {
                             <li><a class="exampleLink" data-example="rain">rain</a></li>
                         </ul>
                     </div>
+                    <br>
+                    <div title="Animation frames per step">
+                        <span class="glyphicon glyphicon-time"></span>&nbsp;<input id="numFrames" type="number" value="3" min="1" style="width: 48px" />
+                    </div>
+                    <br>
                     <button id="btnReloadExample" class="btn btn-default">Reload</button>
                 </div>
             </div>
@@ -178,20 +192,20 @@ world.registerCellType('living', {
                 <br>
                 Here are some interesting functions from the above example:
 
-                <ul class="defaults">
-                    <li id="type">
+                <ul>
+                    <li>
                         <h4><span class="token keyword">process</span></h4>
                         <p>This function is called every step of the simulation and is passed an array of neighbors to this cell.</p>
                     </li>
                 </ul>
-                <ul class="defaults">
-                    <li id="type">
+                <ul>
+                    <li>
                         <h4><span class="token keyword">reset</span></h4>
                         <p>This function is called at the beginning of each step of the simulation to prepare the cell for the upcoming step. </p>
                     </li>
                 </ul>
-                <ul class="defaults">
-                    <li id="type">
+                <ul>
+                    <li>
                         <h4><span class="token keyword">getColor</span></h4>
                         <p>This is our own function for determining what color the cell will be. It will be used in our display loop, which
                         is not part of the engine.</p>
@@ -220,15 +234,15 @@ world.initialize([
                 </pre>
 
                 <h3>Other interesting functions</h3>
-                <ul class="defaults">
-                    <li id="type">
+                <ul>
+                    <li>
                         <h4><span class="token keyword">step</span></h4>
                         <p>This is used to make the simulation run one loop.  Typically you would run step
                             from setInterval or requestAnimationFrame.</p>
                     </li>
                 </ul>
-                 <ul class="defaults">
-                    <li id="type">
+                 <ul>
+                    <li>
                         <h4><span class="token keyword">countSurroundingCellsWithValue</span></h4>
                         <p>Returns a count of members of the given cell array that contain the given
                             propery.  This is useful in many cellular automata simulations.</p>
@@ -240,8 +254,8 @@ process: function (neighbors) {
     this.open = (this.wasOpen && surrounding &gt;= 4) || surrounding &gt;= 6;
 }
                 </pre>
-                <ul class="defaults">
-                    <li id="type">
+                <ul>
+                    <li>
                         <h4><span class="token keyword">createGridFromValues</span></h4>
                         <p>Creates a grid of integers which can be used as input for a new world.  In this way, we
                             can build our simulated world in several iterations.  See the "cavesWithWater" example.</p>
@@ -252,8 +266,8 @@ var grid = world.createGridFromValues([
         { cellType: 'wall', hasProperty: 'open', value: 0 }
     ], 1);
                 </pre>
-                 <ul class="defaults">
-                    <li id="type">
+                 <ul>
+                    <li>
                         <h4><span class="token keyword">initializeFromGrid</span></h4>
                         <p>Accepts a grid generated with "createGridFromValues" and a list of what values mean
                             which cellTypes in this new simulated world.</p>
