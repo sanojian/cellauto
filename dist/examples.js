@@ -86,16 +86,16 @@ function example_cavesWithWater() {
 			// push my water out to my available neighbors
 
 			// cell below me will take all it can
-			if (neighbors[world.BOTTOM] !== null && this.water && neighbors[world.BOTTOM].water < 9) {
-				var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM].water);
+			if (neighbors[world.BOTTOM.index] !== null && this.water && neighbors[world.BOTTOM.index].water < 9) {
+				var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM.index].water);
 				this.water-= amt;
-				neighbors[world.BOTTOM].water += amt;
+				neighbors[world.BOTTOM.index].water += amt;
 				return;
 			}
 
 			// bottom two corners take half of what I have
 			for (var i=5; i<=7; i++) {
-				if (i!=world.BOTTOM && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
+				if (i!=world.BOTTOM.index && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
 					var amt = Math.min(this.water, Math.ceil((9 - neighbors[i].water)/2));
 					this.water-= amt;
 					neighbors[i].water += amt;
@@ -123,7 +123,8 @@ function example_cavesWithWater() {
 			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';
 		},
 		process: function(neighbors) {
-			this.lighted = neighbors[world.TOP] && !neighbors[world.TOP].water && !neighbors[world.TOP].isSolid;
+			this.lighted = neighbors[world.TOP.index] && !(neighbors[world.TOP.index].water === 9) && !neighbors[world.TOP.index].isSolid
+				&& neighbors[world.BOTTOM.index] && neighbors[world.BOTTOM.index].isSolid;
 		}
 	});
 
@@ -195,16 +196,16 @@ function example_fallingWater() {
 	        // push my water out to my available neighbors
 
             // cell below me will take all it can
-            if (neighbors[world.BOTTOM] !== null && this.water && neighbors[world.BOTTOM].water < 9) {
-                var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM].water);
+            if (neighbors[world.BOTTOM.index] !== null && this.water && neighbors[world.BOTTOM.index].water < 9) {
+                var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM.index].water);
                 this.water-= amt;
-                neighbors[world.BOTTOM].water += amt;
+                neighbors[world.BOTTOM.index].water += amt;
                 return;
             }
 
             // bottom two corners take half of what I have
             for (var i=5; i<=7; i++) {
-                if (i!=world.BOTTOM && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
+                if (i!=world.BOTTOM.index && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
                     var amt = Math.min(this.water, Math.ceil((9 - neighbors[i].water)/2));
                     this.water-= amt;
                     neighbors[i].water += amt;
@@ -329,7 +330,7 @@ function example_rain() {
 		},
 		process: function(neighbors) {
 			// rain on the top row
-			if (neighbors[world.TOP] === null && Math.random() < 0.02) {
+			if (neighbors[world.TOP.index] === null && Math.random() < 0.02) {
 				this.water = 5;
 			}
 			else if (this.water === 0) {
@@ -340,16 +341,16 @@ function example_rain() {
 			// push my water out to my available neighbors
 
 			// cell below me will take all it can
-			if (neighbors[world.BOTTOM] !== null && this.water && neighbors[world.BOTTOM].water < 9) {
-				var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM].water);
+			if (neighbors[world.BOTTOM.index] !== null && this.water && neighbors[world.BOTTOM.index].water < 9) {
+				var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM.index].water);
 				this.water-= amt;
-				neighbors[world.BOTTOM].water += amt;
+				neighbors[world.BOTTOM.index].water += amt;
 				return;
 			}
 
 			// bottom two corners take half of what I have
 			for (var i=5; i<=7; i++) {
-				if (i!=world.BOTTOM && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
+				if (i!=world.BOTTOM.index && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
 					var amt = Math.min(this.water, Math.ceil((9 - neighbors[i].water)/2));
 					this.water-= amt;
 					neighbors[i].water += amt;
@@ -377,7 +378,8 @@ function example_rain() {
 			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';
 		},
 		process: function(neighbors) {
-			this.lighted = neighbors[world.TOP] && !neighbors[world.TOP].water && !neighbors[world.TOP].isSolid && neighbors[world.BOTTOM] && neighbors[world.BOTTOM].isSolid;
+			this.lighted = neighbors[world.TOP.index] && !(neighbors[world.TOP.index].water === 9) && !neighbors[world.TOP.index].isSolid
+				&& neighbors[world.BOTTOM.index] && neighbors[world.BOTTOM.index].isSolid;
 		}
 	});
 
@@ -405,7 +407,7 @@ function example_trees() {
 		grid[y] = [];
 		for (var x=0; x<world.width; x++) {
 			grid[y][x] = y > world.height - world.height/8 ? 1 : 0;
-			if (y == world.height - world.height/8 && x == Math.floor(world.width/2)) {
+			if (y == world.height - world.height/8 && x % 32 === 16) {
 				grid[y][x] = 2;
 			}
 		}
@@ -427,24 +429,65 @@ function example_trees() {
 			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';
 		},
 		process: function(neighbors) {
-			this.lighted = neighbors[world.TOP] && !neighbors[world.TOP].isSolid && neighbors[world.BOTTOM] && neighbors[world.BOTTOM].isSolid;
+			this.lighted = neighbors[world.TOP.index] && !neighbors[world.TOP.index].isSolid
+				&& neighbors[world.BOTTOM.index] && neighbors[world.BOTTOM.index].isSolid;
 		}
 	});
 
 	world.registerCellType('tree', {
-		color: '68, 36, 52, 1',
-		potential: 8,
+		potential: 16,
 		direction: { x: 0, y: -1},
 		getColor: function() {
-			return this.color;
+			return this.hasSprouted ? '52, 101, 36, 1' : '68, 36, 52, 1';
 		},
-		process: function(neighbors) {
-			if (this.potential && neighbors[world.TOP] && !neighbors[world.TOP].isSolid) {
-				var newX = this.x + this.direction.x;
-				var newY = this.y + this.direction.y;
+		sprout: function() {
+			for (var y=-1; y<=1; y++) {
+				for (var x=-1; x<=1; x++) {
+					if (Math.random() < 0.5) {
+						if (world.grid[this.y + y] && world.grid[this.y + y][this.x + x]) {
+							if (world.grid[this.y + y][this.x + x].cellType === 'tree') {
+							}
+							else {
+								world.grid[this.y + y][this.x + x] = new world.cellTypes.tree(this.x, this.y);
+							}
+						}
+						world.grid[this.y + y][this.x + x].potential = 0;
+						world.grid[this.y + y][this.x + x].hasSprouted = true;
+					}
+				}
+			}
+		},
+		process: function() {
+			if (!this.potential) {
+				return;
+			}
+
+			var newX = this.x + this.direction.x;
+			var newY = this.y + this.direction.y;
+			var cellInDirection;
+			try {
+				cellInDirection = world.grid[newY][newX];
+			} catch(ex) {}
+
+			if (cellInDirection && !cellInDirection.isSolid) {
 				world.grid[newY][newX] = new world.cellTypes.tree(newX, newY);
 				world.grid[newY][newX].potential = this.potential - 1;
-				this.potential = 0;
+				world.grid[newY][newX].direction.x = this.direction.x;
+				world.grid[newY][newX].direction.y = this.direction.y;
+				if (world.grid[newY][newX].potential < 12) {
+					world.grid[newY][newX].delay(10, function (cell) {
+						cell.sprout();
+					});
+				}
+				// branch?
+				if (this.potential < 14 && Math.random() < 0.3) {
+					this.direction.x = Math.random() > 0.5 ? 1 : -1;
+					this.direction.y = Math.random() > 0.5 ? 0 : -1;
+					this.potential -= Math.ceil(this.potential/4);
+				}
+				else {
+					this.potential = 0;
+				}
 			}
 		}
 	});

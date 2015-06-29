@@ -2,6 +2,7 @@ function CellAutoCell(locX, locY) {
 	this.x = locX;
 	this.y = locY;
 
+	this.delays = [];
 }
 
 CellAutoCell.prototype.process = function(neighbors) {
@@ -16,6 +17,10 @@ CellAutoCell.prototype.countSurroundingCellsWithValue = function(neighbors, valu
 	}
 	return surrounding;
 };
+CellAutoCell.prototype.delay = function(numSteps, fn) {
+	this.delays.push({ steps: numSteps, action: fn });
+};
+
 CellAutoCell.prototype.reset = function(neighbors) {
 	return;
 };

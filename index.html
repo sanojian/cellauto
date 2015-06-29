@@ -119,6 +119,7 @@ function drawGrid(ctx, world) {
                             <li><a class="exampleLink" data-example="cavesWithWater">cavesWithWater</a></li>
                             <li><a class="exampleLink" data-example="caves">caves</a></li>
                             <li><a class="exampleLink" data-example="rain">rain</a></li>
+                            <li><a class="exampleLink" data-example="trees">trees</a></li>
                         </ul>
                     </div>
                     <br>
@@ -154,9 +155,6 @@ function drawGrid(ctx, world) {
             <div class="col-md-2"></div>
             <div class="col-md-8">
                 <h2>Usage</h2>
-                cellauto.js is a library for creating cellular automata simulations in Javascript.  The library is tiny and
-                is pure Javascript, requiring no third party code to run in your browser. The project is open-source and licensed under MIT.
-
                 <h3>Getting Started</h3>
                 Creating the world to run your simulation is simple.
                 <pre class="prettyprint lang-js">
@@ -254,10 +252,24 @@ process: function (neighbors) {
     this.open = (this.wasOpen && surrounding &gt;= 4) || surrounding &gt;= 6;
 }
                 </pre>
+                 <ul>
+                    <li>
+                        <h4><span class="token keyword">delay</span></h4>
+                        <p>Pass a number of steps and a callback function.  The callback will be called after
+                        the given number of steps with the cell passed as an argugment.  See the "trees" example.</p>
+                    </li>
+                </ul>
+                <pre class="prettyprint lang-js">
+process: function (neighbors) {
+    this.delay(10, function(cell) {
+        cell.doSomething();
+    });
+}
+                </pre>
                 <ul>
                     <li>
                         <h4><span class="token keyword">createGridFromValues</span></h4>
-                        <p>Creates a grid of integers which can be used as input for a new world.  In this way, we
+                        <p>Creates a grid of values which can be used as input for a new world.  In this way, we
                             can build our simulated world in several iterations.  See the "cavesWithWater" example.</p>
                     </li>
                 </ul>
@@ -287,6 +299,7 @@ world.initializeFromGrid([
 for (var y=0; y&lt;world.height; y++) {
     for (var x=0; x&lt;world.width; x++) {
         var cell = world.grid[y][x];
+        // TODO: awesome rendering of the cell
     }
 }
                 </pre>

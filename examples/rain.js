@@ -56,7 +56,7 @@ function example_rain() {
 		},
 		process: function(neighbors) {
 			// rain on the top row
-			if (neighbors[world.TOP] === null && Math.random() < 0.02) {
+			if (neighbors[world.TOP.index] === null && Math.random() < 0.02) {
 				this.water = 5;
 			}
 			else if (this.water === 0) {
@@ -67,16 +67,16 @@ function example_rain() {
 			// push my water out to my available neighbors
 
 			// cell below me will take all it can
-			if (neighbors[world.BOTTOM] !== null && this.water && neighbors[world.BOTTOM].water < 9) {
-				var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM].water);
+			if (neighbors[world.BOTTOM.index] !== null && this.water && neighbors[world.BOTTOM.index].water < 9) {
+				var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM.index].water);
 				this.water-= amt;
-				neighbors[world.BOTTOM].water += amt;
+				neighbors[world.BOTTOM.index].water += amt;
 				return;
 			}
 
 			// bottom two corners take half of what I have
 			for (var i=5; i<=7; i++) {
-				if (i!=world.BOTTOM && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
+				if (i!=world.BOTTOM.index && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
 					var amt = Math.min(this.water, Math.ceil((9 - neighbors[i].water)/2));
 					this.water-= amt;
 					neighbors[i].water += amt;
@@ -104,7 +104,8 @@ function example_rain() {
 			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';
 		},
 		process: function(neighbors) {
-			this.lighted = neighbors[world.TOP] && !neighbors[world.TOP].water && !neighbors[world.TOP].isSolid && neighbors[world.BOTTOM] && neighbors[world.BOTTOM].isSolid;
+			this.lighted = neighbors[world.TOP.index] && !(neighbors[world.TOP.index].water === 9) && !neighbors[world.TOP.index].isSolid
+				&& neighbors[world.BOTTOM.index] && neighbors[world.BOTTOM.index].isSolid;
 		}
 	});
 

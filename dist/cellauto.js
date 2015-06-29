@@ -2,6 +2,7 @@ function CellAutoCell(locX, locY) {
 	this.x = locX;
 	this.y = locY;
 
+	this.delays = [];
 }
 
 CellAutoCell.prototype.process = function(neighbors) {
@@ -16,6 +17,10 @@ CellAutoCell.prototype.countSurroundingCellsWithValue = function(neighbors, valu
 	}
 	return surrounding;
 };
+CellAutoCell.prototype.delay = function(numSteps, fn) {
+	this.delays.push({ steps: numSteps, action: fn });
+};
+
 CellAutoCell.prototype.reset = function(neighbors) {
 	return;
 };
@@ -26,9 +31,18 @@ function CAWorld(options) {
 	this.height = 24;
 	this.options = options;
 
-	this.TOPLEFT = 0; this.TOP = 1; this.TOPRIGHT = 2;
-	this.LEFT = 3; this.RIGHT = 4;
-	this.BOTTOMLEFT = 5; this.BOTTOM = 6; this.BOTTOMRIGHT = 7;
+	//this.TOPLEFT = 0; this.TOP = 1; this.TOPRIGHT = 2;
+	//this.LEFT = 3; this.RIGHT = 4;
+	//this.BOTTOMLEFT = 5; this.BOTTOM = 6; this.BOTTOMRIGHT = 7;
+
+	this.TOPLEFT        = { index: 0, x: -1, y: -1 };
+	this.TOP            = { index: 1, x:  0, y: -1 };
+	this.TOPRIGHT       = { index: 2, x:  1, y: -1 };
+	this.LEFT           = { index: 3, x: -1, y:  0 };
+	this.RIGHT          = { index: 4, x:  1, y:  0 };
+	this.BOTTOMLEFT     = { index: 5, x: -1, y:  1 };
+	this.BOTTOM         = { index: 6, x:  0, y:  1 };
+	this.BOTTOMRIGHT    = { index: 7, x:  1, y:  1 };
 
 	var neighborhood = [null, null, null, null, null, null, null, null];
 	this.step = function() {
@@ -39,12 +53,23 @@ function CAWorld(options) {
 			}
 		}
 
-		//for (y=0; y<this.height; y++) {
-		//	for (x=0; x<this.width; x++) {
+		// bottom up, left to right processing
 		for (y=this.height-1; y>=0; y--) {
 			for (x=this.width-1; x>=0; x--) {
 				this.fillNeighbors(neighborhood, x, y);
-				this.grid[y][x].process(neighborhood);
+				var cell = this.grid[y][x];
+				cell.process(neighborhood);
+
+				// perform any delays
+				for (var i=0; i<cell.delays.length; i++) {
+					cell.delays[i].steps--;
+					if (cell.delays[i].steps <= 0) {
+						// perform action and remove delay
+						cell.delays[i].action(cell);
+						cell.delays.splice(i, 1);
+						i--;
+					}
+				}
 			}
 		}
 	};
@@ -94,7 +119,7 @@ function CAWorld(options) {
 	};
 
 	this.cellTypes = {};
-	this.registerCellType = function(name, options, init) {
+	this.registerCellType = function(name, cellOptions, init) {
 		this.cellTypes[name] = function(x, y) {
 			CellAutoCell.call(this, x, y);
 
@@ -102,17 +127,34 @@ function CAWorld(options) {
 				init.call(this);
 			}
 
+			if (cellOptions) {
+				for (var key in cellOptions) {
+					if (typeof cellOptions[key] !== 'function') {
+						// properties get instance
+						if (typeof cellOptions[key] === 'object') {
+							// objects must be cloned
+							this[key] = JSON.parse(JSON.stringify(cellOptions[key]));
+						}
+						else {
+							// primitive
+							this[key] = cellOptions[key];
+						}
+					}
+				}
+			}
 		};
 		this.cellTypes[name].prototype = Object.create(CellAutoCell.prototype);
 		this.cellTypes[name].prototype.constructor = this.cellTypes[name];
 		this.cellTypes[name].prototype.cellType = name;
 
-		if (options) {
-			for (var key in options) {
-				this.cellTypes[name].prototype[key] = options[key];
+		if (cellOptions) {
+			for (var key in cellOptions) {
+				if (typeof cellOptions[key] === 'function') {
+					// functions get prototype
+					this.cellTypes[name].prototype[key] = cellOptions[key];
+				}
 			}
 		}
-
 	};
 
 	// apply options
