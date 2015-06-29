@@ -45,10 +45,11 @@ function example_trees() {
 		potential: 16,
 		direction: { x: 0, y: -1},
 		getColor: function() {
-			return this.hasSprouted ? '52, 101, 36, 1' : '68, 36, 52, 1';
+			return this.hasSprouted && this.isTrunk ? '60, 78, 44, 1' : (this.hasSprouted ? '52, 101, 36, 1' : '68, 36, 52, 1');
 		},
 		sprout: function() {
-			for (var y=-1; y<=1; y++) {
+			this.isTrunk = true;
+			for (var y=-1; y<=0; y++) {
 				for (var x=-1; x<=1; x++) {
 					if (Math.random() < 0.5) {
 						if (world.grid[this.y + y] && world.grid[this.y + y][this.x + x]) {
