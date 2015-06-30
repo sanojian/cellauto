@@ -1,25 +1,11 @@
 function example_trees() {
 
 
-	// NOW USE OUR CAVES TO CREATE A NEW WORLD CONTAINING WATER
 	var world = new CAWorld({
 		width: 96,
 		height: 64,
 		cellSize: 6
 	});
-
-	// create ground
-	var grid = [];
-	for (var y=0; y<world.height; y++) {
-		grid[y] = [];
-		for (var x=0; x<world.width; x++) {
-			grid[y][x] = y > world.height - world.height/8 ? 1 : 0;
-			if (y == world.height - world.height/8 && x % 32 === 16) {
-				grid[y][x] = 2;
-			}
-		}
-	}
-
 
 	world.registerCellType('air', {
 		color: '109, 194, 202, 1',
@@ -99,6 +85,18 @@ function example_trees() {
 			}
 		}
 	});
+
+	// create ground
+	var grid = [];
+	for (var y=0; y<world.height; y++) {
+		grid[y] = [];
+		for (var x=0; x<world.width; x++) {
+			grid[y][x] = y > world.height - world.height/8 ? 1 : 0;
+			if (y == world.height - world.height/8 && x % 32 === 16) {
+				grid[y][x] = 2;
+			}
+		}
+	}
 
 	// pass in our generated cave data
 	world.initializeFromGrid([

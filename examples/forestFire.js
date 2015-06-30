@@ -7,7 +7,7 @@ function example_forestFire() {
 	});
 
 
-	var CHANCE_TO_IGNITE = 0.001;
+	var CHANCE_TO_IGNITE = 0.0001;
 	var CHANCE_TO_GROW = 0.01;
 
 	world.registerCellType('tree', {
@@ -17,11 +17,10 @@ function example_forestFire() {
 		burning: 0,
 		process: function (neighbors) {
 			if (this.wasBurning) {
-				this.burning--;
+				this.burning-=3;
 			}
 			else if (this.alive) {
 				var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasBurning');
-				//this.burning = surrounding === 3 || surrounding === 2 && this.burning;
 				if (surrounding) {
 					this.burning = 9;
 					this.alive = false;
