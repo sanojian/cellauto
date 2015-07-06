@@ -24,6 +24,9 @@ window.onload = function() {
     $('#btnReloadExample').on('click', function (evt) {
         loadExample(g_currentExample);
     });
+    $('#btnApplyChanges').on('click', function (evt) {
+        applyCodeChanges();
+    });
     $('#numFrames').on('change', function (evt) {
         changeStepFrames();
     });
@@ -39,9 +42,17 @@ window.onload = function() {
     function loop() {
 
         if (g_nextExample !== null) {
-            world = window[g_nextExample]();
-            myCanvas.width = world.cellSize * world.width;
-            myCanvas.height = world.cellSize * world.height;
+            try {
+                world = window[g_nextExample]();
+                myCanvas.width = world.cellSize * world.width;
+                myCanvas.height = world.cellSize * world.height;
+                $('#btnApplyChanges').removeClass('btn-danger');
+                $('#btnApplyChanges').addClass('btn-success');
+            } catch (ex) {
+                console.log(ex);
+                $('#btnApplyChanges').removeClass('btn-success');
+                $('#btnApplyChanges').addClass('btn-danger');
+            }
             g_nextExample = null;
         }
         // limit speed of simulation
@@ -70,6 +81,21 @@ function loadExample(example) {
     $('#exampleCode').removeClass("prettyprinted").text(window[g_nextExample].toString());
     $('#exampleName').text(example);
     PR.prettyPrint();
+
+    // turn off spell check
+    var exampleDiv = $('#exampleCode')[0];
+    exampleDiv.spellcheck = false;
+    exampleDiv.focus();
+    exampleDiv.blur();
+}
+
+function applyCodeChanges() {
+    var exampleText = $('#exampleCode').text();
+    var lines = exampleText.split('\n');
+    lines.pop();
+    lines.shift();
+    window.example_userCreated = new Function(lines.join('\n'));
+    loadExample('userCreated');
 }
 
 function drawGrid(ctx, world) {
@@ -135,9 +161,15 @@ function drawGrid(ctx, world) {
         </div>
 
         <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-4">
+                <button id="btnApplyChanges" class="btn btn-default">Apply Changes</button>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-2">
             </div>
-            <div class="col-md-8">
+            <div class="col-md-8" contentEditable>
                 <pre id="exampleCode" class="prettyprint lang-js"></pre>
             </div>
         </div>
