@@ -16,7 +16,7 @@ function example_cyclic() {
 			return this.colors[this.state];
 		},
 		process: function (neighbors) {
-			var next = (this.state + 1) % 16;
+			var next = (this.state + Math.floor(Math.random()*2)) % 16;
 
 			var changing = false;
 			for (var i = 0; i < neighbors.length; i++) {

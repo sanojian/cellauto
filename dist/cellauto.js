@@ -43,6 +43,8 @@ function CAWorld(options) {
 	this.BOTTOMLEFT     = { index: 5, x: -1, y:  1 };
 	this.BOTTOM         = { index: 6, x:  0, y:  1 };
 	this.BOTTOMRIGHT    = { index: 7, x:  1, y:  1 };
+	
+	this.randomGenerator = Math.random;
 
 	var neighborhood = [null, null, null, null, null, null, null, null];
 	this.step = function() {
@@ -106,7 +108,7 @@ function CAWorld(options) {
 		for (var y=0; y<this.height; y++) {
 			this.grid[y] = [];
 			for (var x=0; x<this.width; x++) {
-				var random = Math.random() * 100;
+				var random = this.randomGenerator() * 100;
 
 				for (i=0; i<arrayTypeDist.length; i++) {
 					if (random <= arrayTypeDist[i].distribution) {
