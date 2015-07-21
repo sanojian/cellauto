@@ -30,7 +30,7 @@ CellAutoCell.prototype.getSurroundingCellsAverageValue = function(neighbors, val
 	var cnt = 0;
 	for (var i = 0; i < neighbors.length; i++) {
 		if (neighbors[i] !== null && neighbors[i].hasOwnProperty(value)) {
-			summed += neighbors[i].value;
+			summed += neighbors[i][value];
 			cnt++;
 		}
 	}
@@ -140,7 +140,7 @@ function CAWorld(options) {
 			CellAutoCell.call(this, x, y);
 
 			if (init) {
-				init.call(this);
+				init.call(this, x, y);
 			}
 
 			if (cellOptions) {

@@ -1,7 +1,7 @@
 function example_paradise() {
 	// thanks to lithander on TIGSource
 
-	// FIRST CREATE CAVES
+	// FIRST CREATE ISLANDS
 	var world = new CAWorld({
 		width: 96,
 		height: 64,
@@ -9,9 +9,6 @@ function example_paradise() {
 	});
 
 	world.registerCellType('wall', {
-		getColor: function () {
-			return this.open ? '255, 255, 255, 1' : '68, 36, 52, 1';
-		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');
 			this.open = (this.wasOpen && surrounding >= 4) || surrounding >= 5;

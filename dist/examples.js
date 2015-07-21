@@ -39,9 +39,6 @@ function example_cavesWithWater() {
 	});
 
 	world.registerCellType('wall', {
-		getColor: function () {
-			return this.open ? '255, 255, 255, 1' : '68, 36, 52, 1';
-		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');
 			this.open = (this.wasOpen && surrounding >= 4) || surrounding >= 6;
@@ -176,71 +173,48 @@ function example_cyclic() {
 
 	return world;
 }
-function example_fallingWater() {
+function example_explosion() {
 
-    var world = new CAWorld({
+	world = new CAWorld({
 		width: 96,
 		height: 64,
 		cellSize: 6
 	});
 
-    world.registerCellType('water', {
-        getColor: function() {
-            return '89, 125, 206, ' + (this.water ? Math.max(0.3, this.water/9) : 0);
-        },
-        process: function(neighbors) {
-            if (this.water === 0) {
-                // already empty
-                return;
-            }
-	        // push my water out to my available neighbors
+	world.registerCellType('water', {
+		getColor: function () {
+			var v = (Math.max(2 * this.value + 0.02, 0) - 0.02) + 0.5;
+			var r = Math.floor(v * 300);
+			var g = Math.floor(v * 200);
+			var b = Math.floor(v * 200);
 
-            // cell below me will take all it can
-            if (neighbors[world.BOTTOM.index] !== null && this.water && neighbors[world.BOTTOM.index].water < 9) {
-                var amt = Math.min(this.water, 9 - neighbors[world.BOTTOM.index].water);
-                this.water-= amt;
-                neighbors[world.BOTTOM.index].water += amt;
-                return;
-            }
+			return r + ', ' + g + ', ' + b + ', 1';
+		},
+		process: function (neighbors) {
+			var avg = this.getSurroundingCellsAverageValue(neighbors, 'value');
+			this.next = 0.99 * (2 * avg - this.prev);
 
-            // bottom two corners take half of what I have
-            for (var i=5; i<=7; i++) {
-                if (i!=world.BOTTOM.index && neighbors[i] !== null && this.water && neighbors[i].water < 9) {
-                    var amt = Math.min(this.water, Math.ceil((9 - neighbors[i].water)/2));
-                    this.water-= amt;
-                    neighbors[i].water += amt;
-                    return;
-                }
-            }
-            // sides take a third of what I have
-            for (i=3; i<=4; i++) {
-                if (neighbors[i] !== null && neighbors[i].water < this.water) {
-                    var amt = Math.min(this.water, Math.ceil((9 - neighbors[i].water)/3));
-                    this.water-= amt;
-                    neighbors[i].water += amt;
-                    return;
-                }
-            }
-        }
-    }, function() {
-        //init
-        this.water = Math.floor(Math.random() * 9);
-    });
+			return true;
+		},
+		reset: function () {
+			this.prev = this.value;
+			this.value = this.next;
 
-    world.registerCellType('rock', {
-        getColor: function() {
-            return '68, 36, 52, 1';
-        }
-    });
+			return true;
+		}
+	}, function (x, y) {
+		//init
+		this.value = x === world.width/2 && y === world.height/2 ? 10 : 0.0;
+		this.prev = this.value;
+		this.next = this.value;
+	});
 
-    world.initialize([
-        { name: 'water', distribution: 70 },
-        { name: 'rock', distribution: 30 }
-    ]);
+	world.initialize([
+		{ name: 'water', distribution: 100 }
+	]);
 
 	return world;
-}
-
+};
 function example_forestFire() {
 
 	var world = new CAWorld({
@@ -323,7 +297,7 @@ function example_gameOfLife() {
 function example_islands() {
 	// thanks to lithander on TIGSource
 
-	// FIRST CREATE CAVES
+	// FIRST CREATE ISLANDS
 	var world = new CAWorld({
 		width: 96,
 		height: 64,
@@ -331,9 +305,6 @@ function example_islands() {
 	});
 
 	world.registerCellType('wall', {
-		getColor: function () {
-			return this.open ? '255, 255, 255, 1' : '68, 36, 52, 1';
-		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');
 			this.open = (this.wasOpen && surrounding >= 4) || surrounding >= 5;
@@ -453,7 +424,7 @@ function example_maze() {
 function example_paradise() {
 	// thanks to lithander on TIGSource
 
-	// FIRST CREATE CAVES
+	// FIRST CREATE ISLANDS
 	var world = new CAWorld({
 		width: 96,
 		height: 64,
@@ -461,9 +432,6 @@ function example_paradise() {
 	});
 
 	world.registerCellType('wall', {
-		getColor: function () {
-			return this.open ? '255, 255, 255, 1' : '68, 36, 52, 1';
-		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');
 			this.open = (this.wasOpen && surrounding >= 4) || surrounding >= 5;
@@ -589,9 +557,6 @@ function example_rain() {
 	});
 
 	world.registerCellType('wall', {
-		getColor: function () {
-			return this.open ? '255, 255, 255, 1' : '68, 36, 52, 1';
-		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');
 			this.open = (this.wasOpen && surrounding >= 4) || surrounding >= 6;
@@ -710,14 +675,13 @@ function example_splashes() {
 	world.registerCellType('water', {
 		getColor: function () {
 			var v = (Math.max(2 * this.value + 0.02, 0) - 0.02) + 0.5;
-			var r = (Math.floor(v * 250)).toString();
-			var g = (Math.floor(-80 + v * 500)).toString();
-			var b = (Math.floor(100 + v * 350)).toString();
+			var r = Math.floor(v * 250);
+			var g = Math.floor(-80 + v * 500);
+			var b = Math.floor(100 + v * 350);
 			return r+', '+g+', '+b+', 1';
 		},
 		process: function (neighbors) {
-			if(this.droplet == true)
-			{
+			if(this.droplet == true) {
 				for (var i = 0; i < neighbors.length; i++) {
 					if (neighbors[i] !== null && neighbors[i].value) {
 						neighbors[i].value = 0.5 *this.value;
@@ -732,14 +696,12 @@ function example_splashes() {
 			return true;
 		},
 		reset: function () {
-			if(Math.random() > 0.9999)
-			{
+			if(Math.random() > 0.9999) {
 				this.value = -0.2 + 0.25*Math.random();
 				this.prev = this.value;
 				this.droplet = true;
 			}
-			else
-			{
+			else {
 				this.prev = this.value;
 				this.value = this.next;
 			}
@@ -789,7 +751,7 @@ function example_trees() {
 	});
 
 	world.registerCellType('tree', {
-		potential: 16,
+		//potential: 16,
 		direction: { x: 0, y: -1},
 		getColor: function() {
 			return this.hasSprouted && this.isTrunk ? '60, 78, 44, 1' : (this.hasSprouted ? '52, 101, 36, 1' : '68, 36, 52, 1');
@@ -845,6 +807,9 @@ function example_trees() {
 				}
 			}
 		}
+	}, function () {
+		//init
+		this.potential = 10 + Math.floor(Math.random() * 14);
 	});
 
 	// create ground

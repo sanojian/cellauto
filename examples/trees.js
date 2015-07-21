@@ -28,7 +28,7 @@ function example_trees() {
 	});
 
 	world.registerCellType('tree', {
-		potential: 16,
+		//potential: 16,
 		direction: { x: 0, y: -1},
 		getColor: function() {
 			return this.hasSprouted && this.isTrunk ? '60, 78, 44, 1' : (this.hasSprouted ? '52, 101, 36, 1' : '68, 36, 52, 1');
@@ -84,6 +84,9 @@ function example_trees() {
 				}
 			}
 		}
+	}, function () {
+		//init
+		this.potential = 10 + Math.floor(Math.random() * 14);
 	});
 
 	// create ground

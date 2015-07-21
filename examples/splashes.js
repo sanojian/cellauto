@@ -10,14 +10,13 @@ function example_splashes() {
 	world.registerCellType('water', {
 		getColor: function () {
 			var v = (Math.max(2 * this.value + 0.02, 0) - 0.02) + 0.5;
-			var r = (Math.floor(v * 250)).toString();
-			var g = (Math.floor(-80 + v * 500)).toString();
-			var b = (Math.floor(100 + v * 350)).toString();
+			var r = Math.floor(v * 250);
+			var g = Math.floor(-80 + v * 500);
+			var b = Math.floor(100 + v * 350);
 			return r+', '+g+', '+b+', 1';
 		},
 		process: function (neighbors) {
-			if(this.droplet == true)
-			{
+			if(this.droplet == true) {
 				for (var i = 0; i < neighbors.length; i++) {
 					if (neighbors[i] !== null && neighbors[i].value) {
 						neighbors[i].value = 0.5 *this.value;
@@ -32,14 +31,12 @@ function example_splashes() {
 			return true;
 		},
 		reset: function () {
-			if(Math.random() > 0.9999)
-			{
+			if(Math.random() > 0.9999) {
 				this.value = -0.2 + 0.25*Math.random();
 				this.prev = this.value;
 				this.droplet = true;
 			}
-			else
-			{
+			else {
 				this.prev = this.value;
 				this.value = this.next;
 			}

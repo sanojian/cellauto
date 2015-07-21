@@ -99,7 +99,7 @@ function CAWorld(options) {
 			CellAutoCell.call(this, x, y);
 
 			if (init) {
-				init.call(this);
+				init.call(this, x, y);
 			}
 
 			if (cellOptions) {
