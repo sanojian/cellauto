@@ -37,7 +37,8 @@ function example_cavesWithWater() {
 	world = new CAWorld({
 		width: 96,
 		height: 64,
-		cellSize: 6
+		cellSize: 6,
+		clearRect: true
 	});
 
 	world.registerCellType('water', {

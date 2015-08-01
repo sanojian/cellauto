@@ -68,7 +68,8 @@ function example_cavesWithWater() {
 	world = new CAWorld({
 		width: 96,
 		height: 64,
-		cellSize: 6
+		cellSize: 6,
+		clearRect: true
 	});
 
 	world.registerCellType('water', {
@@ -384,9 +385,9 @@ function example_lava() {
 	// thanks to TheLastBanana on TIGSource
 
 	world = new CAWorld({
-		width: 144,
-		height: 96,
-		cellSize: 4,
+		width: 144*2,
+		height: 96*2,
+		cellSize: 4/2,
 		wrap: true
 	});
 
@@ -423,7 +424,7 @@ function example_lava() {
 			return colors[Math.floor(colors.length * v)];
 		},
 		process: function (neighbors) {
-			if(this.droplet == true) {
+			if(this.droplet === true) {
 				for (var i = 0; i < neighbors.length; i++) {
 					if (neighbors[i] !== null && neighbors[i].value) {
 						neighbors[i].value = 0.5 *this.value;
@@ -677,7 +678,8 @@ function example_rain() {
 	world = new CAWorld({
 		width: 96,
 		height: 64,
-		cellSize: 6
+		cellSize: 6,
+		clearRect: true
 	});
 
 	world.registerCellType('air', {

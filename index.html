@@ -99,12 +99,21 @@ function applyCodeChanges() {
 }
 
 function drawGrid(ctx, world) {
-    ctx.clearRect(0, 0, world.width*world.cellSize, world.height*world.cellSize);
+    // only clear the drawing surface if simulations uses transparency
+    if (world.clearRect) {
+        ctx.clearRect(0, 0, world.width * world.cellSize, world.height * world.cellSize);
+    }
 
     for (var y=0; y<world.height; y++) {
         for (var x=0; x<world.width; x++) {
-            ctx.fillStyle = 'rgba(' + world.grid[y][x].getColor() + ')';
-            ctx.fillRect(x*world.cellSize, y*world.cellSize, world.cellSize, world.cellSize);
+            var newColor = 'rgba(' + world.grid[y][x].getColor() + ')';
+            // if this cell has changed or if transparency is being used, redraw
+            if (world.clearRect || newColor !== world.grid[y][x].oldColor) {
+                ctx.fillStyle = newColor;
+                ctx.fillRect(x * world.cellSize, y * world.cellSize, world.cellSize, world.cellSize);
+            }
+            world.grid[y][x].oldColor = newColor;
+
         }
     }
 }
