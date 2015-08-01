@@ -27,15 +27,10 @@ CellAutoCell.prototype.reset = function(neighbors) {
 
 CellAutoCell.prototype.getSurroundingCellsAverageValue = function(neighbors, value) {
 	var summed = 0.0;
-	var cnt = 0;
 	for (var i = 0; i < neighbors.length; i++) {
 		if (neighbors[i] !== null && neighbors[i].hasOwnProperty(value)) {
 			summed += neighbors[i][value];
-			cnt++;
 		}
 	}
-	if(cnt > 1)
-		return summed / cnt;
-	else
-		return 0;
+	return summed / neighbors.length;//cnt;
 };

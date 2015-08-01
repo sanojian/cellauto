@@ -10,10 +10,10 @@ function example_explosion() {
 		getColor: function () {
 			var v = (Math.max(2 * this.value + 0.02, 0) - 0.02) + 0.5;
 			var r = Math.floor(v * 300);
-			var g = Math.floor(v * 200);
-			var b = Math.floor(v * 200);
+			var g = Math.floor(v * 100);
+			var b = Math.floor(v * 100);
 
-			return r + ', ' + g + ', ' + b + ', 1';
+			return r + ', ' + g + ', ' + b + ', ' + (this.value * 10);
 		},
 		process: function (neighbors) {
 			var avg = this.getSurroundingCellsAverageValue(neighbors, 'value');

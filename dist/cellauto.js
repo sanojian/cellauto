@@ -27,17 +27,12 @@ CellAutoCell.prototype.reset = function(neighbors) {
 
 CellAutoCell.prototype.getSurroundingCellsAverageValue = function(neighbors, value) {
 	var summed = 0.0;
-	var cnt = 0;
 	for (var i = 0; i < neighbors.length; i++) {
 		if (neighbors[i] !== null && neighbors[i].hasOwnProperty(value)) {
 			summed += neighbors[i][value];
-			cnt++;
 		}
 	}
-	if(cnt > 1)
-		return summed / cnt;
-	else
-		return 0;
+	return summed / neighbors.length;//cnt;
 };
 function CAWorld(options) {
 
@@ -45,9 +40,7 @@ function CAWorld(options) {
 	this.height = 24;
 	this.options = options;
 
-	//this.TOPLEFT = 0; this.TOP = 1; this.TOPRIGHT = 2;
-	//this.LEFT = 3; this.RIGHT = 4;
-	//this.BOTTOMLEFT = 5; this.BOTTOM = 6; this.BOTTOMRIGHT = 7;
+	this.wrap = false;
 
 	this.TOPLEFT        = { index: 0, x: -1, y: -1 };
 	this.TOP            = { index: 1, x:  0, y: -1 };
@@ -95,7 +88,11 @@ function CAWorld(options) {
 		for (var i=0; i<NEIGHBORLOCS.length; i++) {
 			var neighborX = x + NEIGHBORLOCS[i].x;
 			var neighborY = y + NEIGHBORLOCS[i].y;
-			if (neighborX < 0 || neighborY < 0 || neighborX >= this.width || neighborY >= this.height) {
+			if (this.wrap) {
+				neighborX = (neighborX + this.width) % this.width;
+				neighborY = (neighborY + this.height) % this.height;
+			}
+			if (!this.wrap && (neighborX < 0 || neighborY < 0 || neighborX >= this.width || neighborY >= this.height)) {
 				neighbors[i] = null;
 			}
 			else {
