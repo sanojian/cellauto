@@ -6,9 +6,14 @@ function example_caves() {
 		cellSize: 6
 	});
 
+	world.palette = [
+		'255, 255, 255, 1',
+		'68, 36, 52, 1'
+	];
+
 	world.registerCellType('wall', {
 		getColor: function () {
-			return this.open ? '255, 255, 255, 1' : '68, 36, 52, 1';
+			return this.open ? 0 : 1;
 		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');
@@ -72,9 +77,25 @@ function example_cavesWithWater() {
 		clearRect: true
 	});
 
+	world.palette = [
+		'89, 125, 206, 0',
+		'89, 125, 206, ' + 1/9,
+		'89, 125, 206, ' + 2/9,
+		'89, 125, 206, ' + 3/9,
+		'89, 125, 206, ' + 4/9,
+		'89, 125, 206, ' + 5/9,
+		'89, 125, 206, ' + 6/9,
+		'89, 125, 206, ' + 7/9,
+		'89, 125, 206, ' + 8/9,
+		'89, 125, 206, 1',
+		'109, 170, 44, 1',
+		'68, 36, 52, 1'
+	];
+
 	world.registerCellType('water', {
 		getColor: function() {
-			return '89, 125, 206, ' + (this.water ? Math.max(0.3, this.water/9) : 0);
+			//return 0x597DCE44;
+			return this.water;
 		},
 		process: function(neighbors) {
 			if (this.water === 0) {
@@ -118,7 +139,7 @@ function example_cavesWithWater() {
 	world.registerCellType('rock', {
 		isSolid: true,
 		getColor: function() {
-			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';
+			return this.lighted ? 10 : 11;
 		},
 		process: function(neighbors) {
 			this.lighted = neighbors[world.TOP.index] && !(neighbors[world.TOP.index].water === 9) && !neighbors[world.TOP.index].isSolid
@@ -141,15 +162,16 @@ function example_cyclic() {
 		cellSize: 6
 	});
 
+	world.palette = [
+		'255,0,0,1', '255,96,0,1', '255,191,0,1', '223,255,0,1',
+		'128,255,0,1', '32,255,0,1', '0,255,64,1', '0,255,159,1',
+		'0,255,255,1', '0,159,255,1', '0,64,255,1', '32,0,255,1',
+		'127,0,255,1', '223,0,255,1', '255,0,191,1', '255,0,96,1'
+	];
+
 	world.registerCellType('cyclic', {
-		colors: [
-			'255,0,0,1', '255,96,0,1', '255,191,0,1', '223,255,0,1',
-			'128,255,0,1', '32,255,0,1', '0,255,64,1', '0,255,159,1',
-			'0,255,255,1', '0,159,255,1', '0,64,255,1', '32,0,255,1',
-			'127,0,255,1', '223,0,255,1', '255,0,191,1', '255,0,96,1'
-		],
 		getColor: function () {
-			return this.colors[this.state];
+			return this.state;
 		},
 		process: function (neighbors) {
 			var next = (this.state + Math.floor(Math.random()*2)) % 16;
@@ -224,13 +246,27 @@ function example_forestFire() {
 		cellSize: 6
 	});
 
+	world.palette = [
+		'208, 70, 72, 0',
+		'208, 70, 72, ' + 1/9,
+		'208, 70, 72, ' + 2/9,
+		'208, 70, 72, ' + 3/9,
+		'208, 70, 72, ' + 4/9,
+		'208, 70, 72, ' + 5/9,
+		'208, 70, 72, ' + 6/9,
+		'208, 70, 72, ' + 7/9,
+		'208, 70, 72, ' + 8/9,
+		'208, 70, 72, 1',
+		'52, 101, 36, 1',
+		'255, 255, 255, 1'
+	];
 
 	var CHANCE_TO_IGNITE = 0.0001;
 	var CHANCE_TO_GROW = 0.01;
 
 	world.registerCellType('tree', {
 		getColor: function () {
-			return this.burning ? '208, 70, 72, ' + Math.max(0.3, this.burning/9) : (this.alive ? '52, 101, 36, 1' : '255, 255, 255, 1');
+			return this.burning ? this.burning : (this.alive ? 10 : 11);
 		},
 		burning: 0,
 		process: function (neighbors) {
@@ -272,9 +308,14 @@ function example_gameOfLife() {
 		cellSize: 6
 	});
 
+	world.palette = [
+		'68, 36, 52, 1',
+		'255, 255, 255, 1'
+	];
+
 	world.registerCellType('living', {
 		getColor: function () {
-			return this.alive ? '68, 36, 52, 1' : '255, 255, 255, 1';
+			return this.alive ? 0 : 1;
 		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasAlive');
@@ -391,27 +432,27 @@ function example_lava() {
 		wrap: true
 	});
 
-	var palette = [
+	world.palette = [
 		'34,10,21,1', '68,17,26,1', '123,16,16,1',
 		'190,45,16,1', '244,102,20,1', '254,212,97,1'
 	];
 
 	var colors = [];
 	var index = 0;
-	for (; index < 18; ++index) { colors[index] = palette[1]; }
-	for (; index < 22; ++index) { colors[index] = palette[0]; }
-	for (; index < 25; ++index) { colors[index] = palette[1]; }
-	for (; index < 27; ++index) { colors[index] = palette[2]; }
-	for (; index < 29; ++index) { colors[index] = palette[3]; }
-	for (; index < 32; ++index) { colors[index] = palette[2]; }
-	for (; index < 35; ++index) { colors[index] = palette[0]; }
-	for (; index < 36; ++index) { colors[index] = palette[2]; }
-	for (; index < 38; ++index) { colors[index] = palette[4]; }
-	for (; index < 42; ++index) { colors[index] = palette[5]; }
-	for (; index < 44; ++index) { colors[index] = palette[4]; }
-	for (; index < 46; ++index) { colors[index] = palette[2]; }
-	for (; index < 56; ++index) { colors[index] = palette[1]; }
-	for (; index < 64; ++index) { colors[index] = palette[0]; }
+	for (; index < 18; ++index) { colors[index] = 1; }
+	for (; index < 22; ++index) { colors[index] = 0; }
+	for (; index < 25; ++index) { colors[index] = 1; }
+	for (; index < 27; ++index) { colors[index] = 2; }
+	for (; index < 29; ++index) { colors[index] = 3; }
+	for (; index < 32; ++index) { colors[index] = 2; }
+	for (; index < 35; ++index) { colors[index] = 0; }
+	for (; index < 36; ++index) { colors[index] = 2; }
+	for (; index < 38; ++index) { colors[index] = 4; }
+	for (; index < 42; ++index) { colors[index] = 5; }
+	for (; index < 44; ++index) { colors[index] = 4; }
+	for (; index < 46; ++index) { colors[index] = 2; }
+	for (; index < 56; ++index) { colors[index] = 1; }
+	for (; index < 64; ++index) { colors[index] = 0; }
 
 	world.registerCellType('lava', {
 		getColor: function () {
@@ -475,9 +516,14 @@ function example_maze() {
 		cellSize: 6
 	});
 
+	world.palette = [
+		'68, 36, 52, 1',
+		'255, 255, 255, 1'
+	];
+
 	world.registerCellType('living', {
 		getColor: function () {
-			return this.alive ? '68, 36, 52, 1' : '255, 255, 255, 1';
+			return this.alive ? 0 : 1;
 		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasAlive');
@@ -682,9 +728,25 @@ function example_rain() {
 		clearRect: true
 	});
 
+	world.palette = [
+		'89, 125, 206, 0',
+		'89, 125, 206, ' + 1/9,
+		'89, 125, 206, ' + 2/9,
+		'89, 125, 206, ' + 3/9,
+		'89, 125, 206, ' + 4/9,
+		'89, 125, 206, ' + 5/9,
+		'89, 125, 206, ' + 6/9,
+		'89, 125, 206, ' + 7/9,
+		'89, 125, 206, ' + 8/9,
+		'89, 125, 206, 1',
+		'109, 170, 44, 1',
+		'68, 36, 52, 1'
+	];
+
 	world.registerCellType('air', {
 		getColor: function() {
-			return '89, 125, 206, ' + (this.water ? Math.max(0.3, this.water/9) : 0);
+			//return '89, 125, 206, ' + (this.water ? Math.max(0.3, this.water/9) : 0);
+			return this.water;
 		},
 		process: function(neighbors) {
 			// rain on the top row
@@ -733,7 +795,7 @@ function example_rain() {
 	world.registerCellType('rock', {
 		isSolid: true,
 		getColor: function() {
-			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';
+			return this.lighted ? 10 : 11;
 		},
 		process: function(neighbors) {
 			this.lighted = neighbors[world.TOP.index] && !(neighbors[world.TOP.index].water === 9) && !neighbors[world.TOP.index].isSolid
@@ -753,18 +815,22 @@ function example_splashes() {
 	// thanks to lithander on TIGSource
 
 	world = new CAWorld({
-		width: 96,
-		height: 64,
-		cellSize: 6
+		width: 96*2,
+		height: 64*2,
+		cellSize: 6/2
 	});
+
+	world.palette = [];
+	var colors = [];
+	for (var index=0; index<64; index++) {
+		world.palette.push('89, 125, 206, ' + index/64);
+		colors[index] = 63 - index;
+	}
 
 	world.registerCellType('water', {
 		getColor: function () {
 			var v = (Math.max(2 * this.value + 0.02, 0) - 0.02) + 0.5;
-			var r = Math.floor(v * 250);
-			var g = Math.floor(-80 + v * 500);
-			var b = Math.floor(100 + v * 350);
-			return r+', '+g+', '+b+', 1';
+			return colors[Math.floor(colors.length * v)];
 		},
 		process: function (neighbors) {
 			if(this.droplet == true) {

@@ -8,27 +8,27 @@ function example_lava() {
 		wrap: true
 	});
 
-	var palette = [
+	world.palette = [
 		'34,10,21,1', '68,17,26,1', '123,16,16,1',
 		'190,45,16,1', '244,102,20,1', '254,212,97,1'
 	];
 
 	var colors = [];
 	var index = 0;
-	for (; index < 18; ++index) { colors[index] = palette[1]; }
-	for (; index < 22; ++index) { colors[index] = palette[0]; }
-	for (; index < 25; ++index) { colors[index] = palette[1]; }
-	for (; index < 27; ++index) { colors[index] = palette[2]; }
-	for (; index < 29; ++index) { colors[index] = palette[3]; }
-	for (; index < 32; ++index) { colors[index] = palette[2]; }
-	for (; index < 35; ++index) { colors[index] = palette[0]; }
-	for (; index < 36; ++index) { colors[index] = palette[2]; }
-	for (; index < 38; ++index) { colors[index] = palette[4]; }
-	for (; index < 42; ++index) { colors[index] = palette[5]; }
-	for (; index < 44; ++index) { colors[index] = palette[4]; }
-	for (; index < 46; ++index) { colors[index] = palette[2]; }
-	for (; index < 56; ++index) { colors[index] = palette[1]; }
-	for (; index < 64; ++index) { colors[index] = palette[0]; }
+	for (; index < 18; ++index) { colors[index] = 1; }
+	for (; index < 22; ++index) { colors[index] = 0; }
+	for (; index < 25; ++index) { colors[index] = 1; }
+	for (; index < 27; ++index) { colors[index] = 2; }
+	for (; index < 29; ++index) { colors[index] = 3; }
+	for (; index < 32; ++index) { colors[index] = 2; }
+	for (; index < 35; ++index) { colors[index] = 0; }
+	for (; index < 36; ++index) { colors[index] = 2; }
+	for (; index < 38; ++index) { colors[index] = 4; }
+	for (; index < 42; ++index) { colors[index] = 5; }
+	for (; index < 44; ++index) { colors[index] = 4; }
+	for (; index < 46; ++index) { colors[index] = 2; }
+	for (; index < 56; ++index) { colors[index] = 1; }
+	for (; index < 64; ++index) { colors[index] = 0; }
 
 	world.registerCellType('lava', {
 		getColor: function () {

@@ -48,9 +48,25 @@ function example_rain() {
 		clearRect: true
 	});
 
+	world.palette = [
+		'89, 125, 206, 0',
+		'89, 125, 206, ' + 1/9,
+		'89, 125, 206, ' + 2/9,
+		'89, 125, 206, ' + 3/9,
+		'89, 125, 206, ' + 4/9,
+		'89, 125, 206, ' + 5/9,
+		'89, 125, 206, ' + 6/9,
+		'89, 125, 206, ' + 7/9,
+		'89, 125, 206, ' + 8/9,
+		'89, 125, 206, 1',
+		'109, 170, 44, 1',
+		'68, 36, 52, 1'
+	];
+
 	world.registerCellType('air', {
 		getColor: function() {
-			return '89, 125, 206, ' + (this.water ? Math.max(0.3, this.water/9) : 0);
+			//return '89, 125, 206, ' + (this.water ? Math.max(0.3, this.water/9) : 0);
+			return this.water;
 		},
 		process: function(neighbors) {
 			// rain on the top row
@@ -99,7 +115,7 @@ function example_rain() {
 	world.registerCellType('rock', {
 		isSolid: true,
 		getColor: function() {
-			return this.lighted ? '109, 170, 44, 1' : '68, 36, 52, 1';
+			return this.lighted ? 10 : 11;
 		},
 		process: function(neighbors) {
 			this.lighted = neighbors[world.TOP.index] && !(neighbors[world.TOP.index].water === 9) && !neighbors[world.TOP.index].isSolid

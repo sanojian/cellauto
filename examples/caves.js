@@ -6,9 +6,14 @@ function example_caves() {
 		cellSize: 6
 	});
 
+	world.palette = [
+		'255, 255, 255, 1',
+		'68, 36, 52, 1'
+	];
+
 	world.registerCellType('wall', {
 		getColor: function () {
-			return this.open ? '255, 255, 255, 1' : '68, 36, 52, 1';
+			return this.open ? 0 : 1;
 		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasOpen');

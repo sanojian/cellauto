@@ -2,18 +2,22 @@ function example_splashes() {
 	// thanks to lithander on TIGSource
 
 	world = new CAWorld({
-		width: 96,
-		height: 64,
-		cellSize: 6
+		width: 96*2,
+		height: 64*2,
+		cellSize: 6/2
 	});
+
+	world.palette = [];
+	var colors = [];
+	for (var index=0; index<64; index++) {
+		world.palette.push('89, 125, 206, ' + index/64);
+		colors[index] = 63 - index;
+	}
 
 	world.registerCellType('water', {
 		getColor: function () {
 			var v = (Math.max(2 * this.value + 0.02, 0) - 0.02) + 0.5;
-			var r = Math.floor(v * 250);
-			var g = Math.floor(-80 + v * 500);
-			var b = Math.floor(100 + v * 350);
-			return r+', '+g+', '+b+', 1';
+			return colors[Math.floor(colors.length * v)];
 		},
 		process: function (neighbors) {
 			if(this.droplet == true) {

@@ -8,9 +8,14 @@ function example_maze() {
 		cellSize: 6
 	});
 
+	world.palette = [
+		'68, 36, 52, 1',
+		'255, 255, 255, 1'
+	];
+
 	world.registerCellType('living', {
 		getColor: function () {
-			return this.alive ? '68, 36, 52, 1' : '255, 255, 255, 1';
+			return this.alive ? 0 : 1;
 		},
 		process: function (neighbors) {
 			var surrounding = this.countSurroundingCellsWithValue(neighbors, 'wasAlive');

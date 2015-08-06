@@ -6,13 +6,27 @@ function example_forestFire() {
 		cellSize: 6
 	});
 
+	world.palette = [
+		'208, 70, 72, 0',
+		'208, 70, 72, ' + 1/9,
+		'208, 70, 72, ' + 2/9,
+		'208, 70, 72, ' + 3/9,
+		'208, 70, 72, ' + 4/9,
+		'208, 70, 72, ' + 5/9,
+		'208, 70, 72, ' + 6/9,
+		'208, 70, 72, ' + 7/9,
+		'208, 70, 72, ' + 8/9,
+		'208, 70, 72, 1',
+		'52, 101, 36, 1',
+		'255, 255, 255, 1'
+	];
 
 	var CHANCE_TO_IGNITE = 0.0001;
 	var CHANCE_TO_GROW = 0.01;
 
 	world.registerCellType('tree', {
 		getColor: function () {
-			return this.burning ? '208, 70, 72, ' + Math.max(0.3, this.burning/9) : (this.alive ? '52, 101, 36, 1' : '255, 255, 255, 1');
+			return this.burning ? this.burning : (this.alive ? 10 : 11);
 		},
 		burning: 0,
 		process: function (neighbors) {

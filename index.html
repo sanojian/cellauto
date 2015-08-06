@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="./style.css">
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!--script src="//cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.7/pixi.min.js"></script-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pixi.js/1.5.3/pixi.js"></script>
     <script src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js?skin=desert"></script>
 
     <script src="./dist/cellauto.js"></script>
@@ -32,10 +34,10 @@ window.onload = function() {
     });
 
     loadExample('cavesWithWater');
-    //loadExample('explosion');
+    //g_nextExample = 'example_lava';
+    //loadExample('lava');
 
-    var myCanvas = document.getElementById('myCanvas');
-    var ctx = myCanvas.getContext('2d');
+    var myCanvas, ctx, renderer, stage, meter, textures, pixels;
 
     var frames = 0;
     var world;
@@ -44,8 +46,37 @@ window.onload = function() {
         if (g_nextExample !== null) {
             try {
                 world = window[g_nextExample]();
+
+                myCanvas = document.getElementById('myCanvas');
                 myCanvas.width = world.cellSize * world.width;
                 myCanvas.height = world.cellSize * world.height;
+
+                //renderer = PIXI.autoDetectRenderer(myCanvas.width, myCanvas.height, { view: myCanvas });
+                renderer = renderer || new PIXI.autoDetectRenderer(myCanvas.width, myCanvas.height, myCanvas, null, true);
+
+                // create the root of the scene graph
+                //stage = new PIXI.Container();
+                stage = stage || new PIXI.Stage(0xFFFFFF);
+
+                textures = [];
+                pixels = [];
+
+                var textureCanvas = document.createElement('canvas');
+                textureCanvas.width = world.cellSize * world.palette.length;
+                textureCanvas.height = world.cellSize;
+                var textureCtx = textureCanvas.getContext('2d');
+                for (var i=0; i<world.palette.length; i++) {
+                    textureCtx.fillStyle = 'rgba(' + world.palette[i] + ')';
+                    textureCtx.fillRect(i*world.cellSize, 0, world.cellSize, world.cellSize);
+                }
+                var baseTexture = new PIXI.BaseTexture.fromCanvas(textureCanvas);
+                for (var i=0; i<world.palette.length; i++) {
+                    textures.push(new PIXI.Texture(baseTexture, new PIXI.Rectangle(i*world.cellSize, 0, world.cellSize, world.cellSize)));
+                }
+
+
+                drawGrid(pixels, world, stage, textures);
+
                 $('#btnApplyChanges').removeClass('btn-danger');
                 $('#btnApplyChanges').addClass('btn-success');
             } catch (ex) {
@@ -58,7 +89,8 @@ window.onload = function() {
         // limit speed of simulation
         if(frames % g_stepFrames === 0) {
             world.step();
-            drawGrid(ctx, world);
+            updateGrid(pixels, world, textures);
+            renderer.render(stage);
         }
 
         requestAnimationFrame(loop);
@@ -98,22 +130,30 @@ function applyCodeChanges() {
     loadExample('userCreated');
 }
 
-function drawGrid(ctx, world) {
-    // only clear the drawing surface if simulations uses transparency
-    if (world.clearRect) {
-        ctx.clearRect(0, 0, world.width * world.cellSize, world.height * world.cellSize);
-    }
+function updateGrid(pixels, world, textures) {
 
     for (var y=0; y<world.height; y++) {
-        for (var x=0; x<world.width; x++) {
-            var newColor = 'rgba(' + world.grid[y][x].getColor() + ')';
-            // if this cell has changed or if transparency is being used, redraw
-            if (world.clearRect || newColor !== world.grid[y][x].oldColor) {
-                ctx.fillStyle = newColor;
-                ctx.fillRect(x * world.cellSize, y * world.cellSize, world.cellSize, world.cellSize);
+        for (var x = 0; x < world.width; x++) {
+            var newColor = world.grid[y][x].getColor();
+            if (newColor !== world.grid[y][x].oldColor) {
+                pixels[x + y*world.width].setTexture(textures[newColor]);
+                world.grid[y][x].oldColor = newColor;
             }
-            world.grid[y][x].oldColor = newColor;
+        }
+    }
+}
 
+function drawGrid(pixels, world, stage, textures) {
+    try {
+        stage.removeChildren();
+    } catch (ex) { console.log(ex); }
+    for (var y=0; y<world.height; y++) {
+        for (var x=0; x<world.width; x++) {
+            var sprite = new PIXI.Sprite(textures[0]);
+            pixels[x + y*world.width] = sprite;
+            sprite.x = x*world.cellSize;
+            sprite.y = y*world.cellSize;
+            stage.addChild(sprite);
         }
     }
 }
@@ -150,19 +190,19 @@ function drawGrid(ctx, world) {
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a class="exampleLink" data-example="caves">caves</a></li>
-                            <li><a class="exampleLink" data-example="islands">islands</a></li>
+                            <!--li><a class="exampleLink" data-example="islands">islands</a></li-->
                             <li><a class="exampleLink" data-example="cavesWithWater">cavesWithWater</a></li>
                             <li><a class="exampleLink" data-example="rain">rain</a></li>
                             <li><a class="exampleLink" data-example="splashes">splashes</a></li>
                             <li><a class="exampleLink" data-example="lava">lava</a></li>
-                            <li><a class="exampleLink" data-example="paradise">paradise</a></li>
-                            <li><a class="exampleLink" data-example="trees">trees</a></li>
+                            <!--li><a class="exampleLink" data-example="paradise">paradise</a></li-->
+                            <!--li><a class="exampleLink" data-example="trees">trees</a></li-->
                             <!--li><a class="exampleLink" data-example="fallingWater">fallingWater</a></li-->
                             <li><a class="exampleLink" data-example="gameOfLife">gameOfLife</a></li>
                             <li><a class="exampleLink" data-example="maze">maze</a></li>
                             <li><a class="exampleLink" data-example="forestFire">forestFire</a></li>
                             <li><a class="exampleLink" data-example="cyclic">cyclic</a></li>
-                            <li><a class="exampleLink" data-example="explosion">explosion</a></li>
+                            <!--li><a class="exampleLink" data-example="explosion">explosion</a></li-->
                         </ul>
                     </div>
                     <br>
