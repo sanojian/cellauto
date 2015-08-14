@@ -34,7 +34,15 @@ module.exports = function(grunt) {
 					]
 				}
 			}
+		},
+		uglify: {
+			my_target: {
+				files: {
+					'dist/cellauto.min.js': ['dist/cellauto.js']
+				}
+			}
 		}
+
 	});
 
 	// These plugins provide necessary tasks.
@@ -44,7 +52,7 @@ module.exports = function(grunt) {
 		'watch'
 	]);
 
-	grunt.registerTask('build', ['jshint', 'concat']);
+	grunt.registerTask('build', ['jshint', 'concat', 'uglify']);
 	grunt.registerTask('default', ['build','monitor']);
 
 };

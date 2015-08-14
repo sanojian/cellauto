@@ -8,6 +8,7 @@
 		"grunt-contrib-concat": "~0.3.0",
 		"grunt-contrib-jshint": "~0.7.1",
 		"grunt-contrib-watch": "~0.5.1",
+		"grunt-contrib-uglify": "*",
 		"grunt-develop": "*",
 		"matchdep": "~0.1.2"
 	}
