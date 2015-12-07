@@ -17,7 +17,13 @@ function CAWorld(options) {
 	
 	this.randomGenerator = Math.random;
 
+	// square tiles by default, eight sides
 	var neighborhood = [null, null, null, null, null, null, null, null];
+
+	if (this.options.hexTiles) {
+		// six sides
+		neighborhood = [null, null, null, null, null, null];
+	}
 	this.step = function() {
 		var y, x;
 		for (y=0; y<this.height; y++) {
@@ -47,12 +53,49 @@ function CAWorld(options) {
 		}
 	};
 
-	var NEIGHBORLOCS = [{x:-1, y:-1}, {x:0, y:-1}, {x:1, y:-1}, {x:-1, y:0}, {x:1, y:0},{x:-1, y:1}, {x:0, y:1}, {x:1, y:1}];
+	//var NEIGHBORLOCS = [{x:-1, y:-1}, {x:0, y:-1}, {x:1, y:-1}, {x:-1, y:0}, {x:1, y:0},{x:-1, y:1}, {x:0, y:1}, {x:1, y:1}];
+	// square tiles by default
+	var NEIGHBORLOCS = [
+		{ diffX : function() { return -1; }, diffY: function() { return -1; }},  // top left
+		{ diffX : function() { return 0; }, diffY: function() { return -1; }},  // top
+		{ diffX : function() { return 1; }, diffY: function() { return -1; }},  // top right
+		{ diffX : function() { return -1; }, diffY: function() { return 0; }},  // left
+		{ diffX : function() { return 1; }, diffY: function() { return 0; }},  // right
+		{ diffX : function() { return -1; }, diffY: function() { return 1; }},  // bottom left
+		{ diffX : function() { return 0; }, diffY: function() { return 1; }},  // bottom
+		{ diffX : function() { return 1; }, diffY: function() { return 1; }}  // bottom right
+	];
+	if (this.options.hexTiles) {
+		if (this.options.flatTopped) {
+			// flat topped hex map,  function requires column to be passed
+			NEIGHBORLOCS = [
+				{ diffX : function() { return -1; }, diffY: function(x) { return x%2 ? -1 : 0; }},  // top left
+				{ diffX : function() { return 0; }, diffY: function() { return -1; }},  // top
+				{ diffX : function() { return 1; }, diffY: function(x) { return x%2 ? -1 : 0; }},  // top right
+				{ diffX : function() { return 1; }, diffY: function(x) { return x%2 ? 0 : 1; }},  // bottom right
+				{ diffX : function() { return 0; }, diffY: function() { return 1; }},  // bottom
+				{ diffX : function() { return -1; }, diffY: function(x) { return x%2 ? 0 : 1; }}  // bottom left
+			];
+		}
+		else {
+			// pointy topped hex map, function requires row to be passed
+			NEIGHBORLOCS = [
+				{ diffX : function(x, y) { return y%2 ? 0 : -1; }, diffY: function() { return -1; }},  // top left
+				{ diffX : function(x, y) { return y%2 ? 1 : 0; }, diffY: function() { return -1; }},  // top right
+				{ diffX : function() { return -1; }, diffY: function() { return 0; }},  // left
+				{ diffX : function() { return 1; }, diffY: function() { return 0; }},  // right
+				{ diffX : function(x, y) { return y%2 ? 0 : -1; }, diffY: function() { return 1; }},  // bottom left
+				{ diffX : function(x, y) { return y%2 ? 1 : 0; }, diffY: function() { return 1; }}  // bottom right
+			];
+		}
+
+	}
 	this.fillNeighbors = function(neighbors, x, y) {
 		for (var i=0; i<NEIGHBORLOCS.length; i++) {
-			var neighborX = x + NEIGHBORLOCS[i].x;
-			var neighborY = y + NEIGHBORLOCS[i].y;
+			var neighborX = x + NEIGHBORLOCS[i].diffX(x, y);
+			var neighborY = y + NEIGHBORLOCS[i].diffY(x, y);
 			if (this.wrap) {
+				// TODO: hex map support for wrapping
 				neighborX = (neighborX + this.width) % this.width;
 				neighborY = (neighborY + this.height) % this.height;
 			}
