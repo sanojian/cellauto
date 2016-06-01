@@ -10,7 +10,10 @@
     });
   } else if (typeof module !== 'undefined' && module.exports) {
     module.exports = CellAuto;
-  } else {
+  } else if(typeof window !== 'undefined'){
     window.CellAuto = CellAuto;
+  } else if(typeof self !== 'undefined'){
+    // web worker
+  	self.CellAuto = CellAuto;
   }
 })();
