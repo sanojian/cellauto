@@ -14,6 +14,6 @@
     window.CellAuto = CellAuto;
   } else if(typeof self !== 'undefined'){
     // web worker
-  	self.CellAuto = CellAuto;
+    self.CellAuto = CellAuto;
   }
 })();
