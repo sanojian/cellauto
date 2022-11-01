@@ -10,6 +10,7 @@
 		"grunt-contrib-watch": "~0.5.1",
 		"grunt-contrib-uglify": "*",
 		"grunt-develop": "*",
+		"grunt-http-server": "*",
 		"matchdep": "~0.1.2"
 	}
 }

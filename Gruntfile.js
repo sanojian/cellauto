@@ -17,6 +17,13 @@ module.exports = function(grunt) {
 				tasks: ['jshint','concat']
 			}
 		},
+		'http-server': {
+			dev: {
+				root: '',
+				port: 3116,
+				runInBackground: true
+			}
+		},
 		jshint: {
 			options: {
 				evil: true
@@ -53,6 +60,6 @@ module.exports = function(grunt) {
 	]);
 
 	grunt.registerTask('build', ['jshint', 'concat', 'uglify']);
-	grunt.registerTask('default', ['build','monitor']);
+	grunt.registerTask('default', ['build', 'http-server', 'monitor']);
 
 };

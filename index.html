@@ -52,11 +52,12 @@ window.onload = function() {
                 myCanvas.height = world.cellSize * world.height;
 
                 //renderer = PIXI.autoDetectRenderer(myCanvas.width, myCanvas.height, { view: myCanvas });
-                renderer = renderer || new PIXI.autoDetectRenderer(myCanvas.width, myCanvas.height, myCanvas, null, true);
+                //renderer = renderer || new PIXI.autoDetectRenderer(myCanvas.width, myCanvas.height, myCanvas, null, true);
+                renderer = renderer || new PIXI.CanvasRenderer(myCanvas.width, myCanvas.height, myCanvas, null, true);
 
                 // create the root of the scene graph
                 //stage = new PIXI.Container();
-                stage = stage || new PIXI.Stage(0xFFFFFF);
+                stage = stage || new PIXI.Stage(0xffffff);
 
                 textures = [];
                 pixels = [];
@@ -136,7 +137,8 @@ function updateGrid(pixels, world, textures) {
         for (var x = 0; x < world.width; x++) {
             var newColor = world.grid[y][x].getColor();
             if (newColor !== world.grid[y][x].oldColor) {
-                pixels[x + y*world.width].setTexture(textures[newColor]);
+                //pixels[x + y*world.width].setTexture(textures[newColor]);
+                pixels[x + y*world.width].texture = textures[newColor];
                 world.grid[y][x].oldColor = newColor;
             }
         }
